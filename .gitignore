@@ -23,9 +23,8 @@ nbactions.xml
 nb-configuration.xml
 META-INF/
 
-## Ignore all *.properties file in root folder, EXCEPT build.properties (the default)
-/*.properties
-!/build.properties
+## Ignore build.properties so custom overrides can live there
+/build.properties
 
 ##Mac noise
 .DS_Store
