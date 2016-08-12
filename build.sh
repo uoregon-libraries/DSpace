@@ -53,5 +53,6 @@ rsync $commonargs $theme_source/xsl/     $theme_dest/xsl/
 rsync $commonargs $theme_source/images/  $theme_dest/images/
 
 cmd="mvn package -Dmirage2.on=true -Dmirage2.deps.included=false"
-echo "Running: $cmd"
-su -l dspace -c "cd $dest && source /etc/profile.d/rvm.sh && $cmd"
+log="/var/log/dspace-build-$(date +"%s")"
+echo "Running $cmd - logging output to $log"
+su -l dspace -c "cd $dest && source /etc/profile.d/rvm.sh && $cmd" > $log
