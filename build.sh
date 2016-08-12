@@ -45,9 +45,12 @@ if [ ! -d $theme_dest ]; then
 fi
 
 echo "Pulling theme files from $theme_source to $theme_dest"
-rsync -a --delete $theme_source/styles/  $theme_dest/styles/
-rsync -a --delete $theme_source/xsl/     $theme_dest/xsl/
-rsync -a --delete $theme_source/images/  $theme_dest/images/
+
+# Make sure all rsyncs do the same stuff
+commonargs="-rltD --delete"
+rsync $commonargs $theme_source/styles/  $theme_dest/styles/
+rsync $commonargs $theme_source/xsl/     $theme_dest/xsl/
+rsync $commonargs $theme_source/images/  $theme_dest/images/
 
 cmd="mvn package -Dmirage2.on=true -Dmirage2.deps.included=false"
 echo "Running: $cmd"
