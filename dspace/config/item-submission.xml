@@ -18,6 +18,9 @@
  <!-- for handle "default".                                                -->
  <submission-map>
    <name-map collection-handle="default" submission-name="traditional" />
+   <name-map collection-handle="1794/11771" submission-name="simple" />
+   <name-map collection-handle="1794/11968" submission-name="pub" />
+   <name-map collection-handle="1794/13662" submission-name="dlcd" />
  </submission-map>
 
 
@@ -189,14 +192,23 @@
 		<processing-class>org.dspace.submit.step.SkipInitialQuestionsStep</processing-class>
 	 </step>
           
-     <!--Disabled by default Since DSpace 4.0: Step 1 will be to gather initial information
+     <!--Disabled by default Since DSpace 4.0: Step 1 will be to gather initial information-->
 	  <step>
 	    <heading>submit.progressbar.initial-questions</heading>
 		<processing-class>org.dspace.submit.step.InitialQuestionsStep</processing-class>
 		<jspui-binding>org.dspace.app.webui.submit.step.JSPInitialQuestionsStep</jspui-binding>   	    
 		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.InitialQuestionsStep</xmlui-binding>
 	    <workflow-editable>true</workflow-editable>
-	  </step> -->
+	  </step>
+	
+	<!--If you disable the initial questions step you should insert the -->
+	<!--SkipInitialQuestionsStep below, to enable proper processing of  -->
+	<!--input-forms configuration                                       -->
+	<!-- 
+	<step>
+		<processing-class>org.dspace.submit.step.SkipInitialQuestionsStep</processing-class>
+	</step>
+    -->  
       
       <!--Step 2 will be to Describe the item.-->
       <step>
@@ -207,7 +219,7 @@
         <workflow-editable>true</workflow-editable>
       </step>
 
-       <!--Step 3 will be to Manage Item access.
+       <!--Step 3 will be to Manage Item access.-->
        <step>
            <heading>submit.progressbar.access</heading>
            <processing-class>org.dspace.submit.step.AccessStep</processing-class>
@@ -215,9 +227,9 @@
            <xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.AccessStep</xmlui-binding>
            <workflow-editable>true</workflow-editable>
        </step>
-       -->
+       
 
-      <!--Step 4 will be to Upload the item -->
+      <!--Step 4 will be to Upload the item
       <step>
         <heading>submit.progressbar.upload</heading>
         <processing-class>org.dspace.submit.step.UploadStep</processing-class>
@@ -225,10 +237,10 @@
 		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.UploadStep</xmlui-binding>
         <workflow-editable>true</workflow-editable>
       </step>
-      
+      -->
 
-       <!-- Step 4 Upload Item with Embargo Features
-            to enable this step, please make sure to comment-out the previous step "UploadStep"  
+       <!-- Step 4 Upload Item with Embargo Features (not supported in JSPUI)
+            to enable this step, please make sure to comment-out the previous step "UploadStep"-->
        <step>
            <heading>submit.progressbar.upload</heading>
            <processing-class>org.dspace.submit.step.UploadWithEmbargoStep</processing-class>
@@ -236,7 +248,7 @@
            <xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.UploadWithEmbargoStep</xmlui-binding>
            <workflow-editable>true</workflow-editable>
        </step>
-       -->
+        
 
  	  <!--Step 5 will be to Verify/Review everything -->
  	  <step>
@@ -269,6 +281,130 @@
       </step>
 
 
+     
+   </submission-process>
+
+   <submission-process name="simple">
+         <!--Step 1 will be to Describe the item.-->
+      <step>
+        <heading>submit.progressbar.describe</heading>
+        <processing-class>org.dspace.submit.step.DescribeStep</processing-class>
+        <jspui-binding>org.dspace.app.webui.submit.step.JSPDescribeStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.DescribeStep</xmlui-binding>
+        <workflow-editable>true</workflow-editable>
+      </step>
+          
+      <!--Step 2 will be to Upload the item-->
+      <step>
+        <heading>submit.progressbar.upload</heading>
+        <processing-class>org.dspace.submit.step.UploadStep</processing-class>
+        <jspui-binding>org.dspace.app.webui.submit.step.JSPUploadStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.UploadStep</xmlui-binding>
+        <workflow-editable>true</workflow-editable>
+      </step>
+     
+ 	  <!--Step 3 will be to Verify/Review everything -->
+ 	  <step>
+        <heading>submit.progressbar.verify</heading>
+        <processing-class>org.dspace.submit.step.VerifyStep</processing-class>
+ 	    <jspui-binding>org.dspace.app.webui.submit.step.JSPVerifyStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.ReviewStep</xmlui-binding>
+		<workflow-editable>true</workflow-editable>
+      </step>
+     
+      <!--Step 4 will be to Sign off on the License-->
+      <step>
+        <heading>submit.progressbar.license</heading>
+        <processing-class>org.dspace.submit.step.LicenseStep</processing-class>
+        <jspui-binding>org.dspace.app.webui.submit.step.JSPLicenseStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.LicenseStep</xmlui-binding>
+		<workflow-editable>false</workflow-editable>
+      </step>
+   
+   </submission-process>
+    <submission-process name="pub">
+         <!--Step 1 will be to Describe the item.-->
+      <step>
+        <heading>submit.progressbar.describe</heading>
+        <processing-class>org.dspace.submit.step.DescribeStep</processing-class>
+        <jspui-binding>org.dspace.app.webui.submit.step.JSPDescribeStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.DescribeStep</xmlui-binding>
+        <workflow-editable>true</workflow-editable>
+      </step>
+          
+      <!--Step 2 will be to Upload the item-->
+      <step>
+        <heading>submit.progressbar.upload</heading>
+        <processing-class>org.dspace.submit.step.UploadStep</processing-class>
+        <jspui-binding>org.dspace.app.webui.submit.step.JSPUploadStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.UploadStep</xmlui-binding>
+        <workflow-editable>true</workflow-editable>
+      </step>
+     
+ 	  <!--Step 3 will be to Verify/Review everything -->
+ 	  <step>
+        <heading>submit.progressbar.verify</heading>
+        <processing-class>org.dspace.submit.step.VerifyStep</processing-class>
+ 	    <jspui-binding>org.dspace.app.webui.submit.step.JSPVerifyStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.ReviewStep</xmlui-binding>
+		<workflow-editable>true</workflow-editable>
+      </step>
+     
+      <!--Step 4 will be to Sign off on the License-->
+      <step>
+        <heading>submit.progressbar.license</heading>
+        <processing-class>org.dspace.submit.step.LicenseStep</processing-class>
+        <jspui-binding>org.dspace.app.webui.submit.step.JSPLicenseStep</jspui-binding>
+		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.LicenseStep</xmlui-binding>
+		<workflow-editable>false</workflow-editable>
+      </step>
+   
+   </submission-process>
+   <submission-process name="dlcd">
+ <!--If you disable the initial questions step you should insert the -->
+        <!--SkipInitialQuestionsStep below, to enable proper processing of  -->
+        <!--input-forms configuration                                       -->
+         
+        <step>
+                <processing-class>org.dspace.submit.step.SkipInitialQuestionsStep</processing-class>
+        </step>
+    
+
+     <!--Step 1 will be to Describe the item.-->
+     <step>
+       <heading>submit.progressbar.describe</heading>
+       <processing-class>org.dspace.submit.step.DescribeStep</processing-class>
+       <jspui-binding>org.dspace.app.webui.submit.step.JSPDescribeStep</jspui-binding>
+       <xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.DescribeStep</xmlui-binding>
+       <workflow-editable>true</workflow-editable>
+     </step>
+     
+     <!--Step 2 will be to Upload the item-->
+     <step>
+       <heading>submit.progressbar.upload</heading>
+       <processing-class>org.dspace.submit.step.UploadStep</processing-class>
+       <jspui-binding>org.dspace.app.webui.submit.step.JSPUploadStep</jspui-binding>
+       <xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.UploadStep</xmlui-binding>
+       <workflow-editable>true</workflow-editable>
+     </step>
+     
+     <!--Step 3 will be to Verify/Review everything -->
+     <step>
+       <heading>submit.progressbar.verify</heading>
+       <processing-class>org.dspace.submit.step.VerifyStep</processing-class>
+       <jspui-binding>org.dspace.app.webui.submit.step.JSPVerifyStep</jspui-binding>
+       <xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.ReviewStep</xmlui-binding>
+       <workflow-editable>true</workflow-editable>
+     </step>
+     
+     <!--Step 4 will be to Sign off on the License-->
+     <step>
+       <heading>submit.progressbar.license</heading>
+       <processing-class>org.dspace.submit.step.LicenseStep</processing-class>
+       <jspui-binding>org.dspace.app.webui.submit.step.JSPLicenseStep</jspui-binding>
+       <xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.LicenseStep</xmlui-binding>
+       <workflow-editable>false</workflow-editable>
+     </step>
      
    </submission-process>
 
