@@ -2,8 +2,8 @@
 <document xmlns="http://di.tamu.edu/DRI/1.0/" xmlns:i18n="http://apache.org/cocoon/i18n/2.1" version="1.1">
 <body>
 <div id="file.news.div.news" n="news" rend="primary">
-<head>DSpace Repository</head>
-<p>DSpace is a digital service that collects, preserves, and distributes digital material. Repositories are important tools for preserving an organization&apos;s legacy; they facilitate digital preservation and scholarly communication.</p>
+<head>Scholars' Bank</head>
+<p>Scholars' Bank is the open access repository for the intellectual work of faculty, students, and staff at the University of Oregon and partner institution collections. <b>Open access journals, student projects, theses, dissertations, pre- and post-print articles, instructional resources</b> and <b>university archival material</b> are all candidates for deposit.</p>
 </div>
 </body>
 <options/>
