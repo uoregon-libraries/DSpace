@@ -5,6 +5,15 @@
 
 set -eu
 
+# Verify build.properties
+if [ ! -f ./build.properties ]; then
+  echo "You need to create and customize your build.properties file"
+  echo
+  echo "    cp ./build.properties.sample ./build.properties"
+  echo "    vim ./build.properties"
+  exit 1
+fi
+
 # Verify superuser
 if [ "$EUID" != "0" ]; then
   echo "This script must be run as root"
