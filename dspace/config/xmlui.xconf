@@ -181,11 +181,14 @@
         <!-- <theme name="Test Theme 1" handle="123456789/1" path="theme1/"/>    -->
         <!-- <theme name="Test Theme 2" regex="community-list" path="theme2/"/> -->
 
+        <!-- Mirage theme, @mire contributed theme, default since DSpace 3.0 -->
+        <!--<theme name="Atmire Mirage Theme" regex=".*" path="Mirage/" />-->
+
+	<!-- Theme For Latest Responsive added 4/16 -->
         <theme name="Mirage 2" regex=".*" path="Mirage2/" />
 
         <!-- Reference theme, the default Manakin XMLUI layout up to DSpace 1.8 -->
         <!-- <theme name="Default Reference Theme" regex=".*" path="Reference/" /> -->
-
         <!-- Classic theme, inspired by the JSP UI -->
         <!-- <theme name="Classic" regex=".*" path="Classic/" /> -->
 
@@ -196,5 +199,12 @@
              For information on configuring the mobile theme, see:
              dspace-xmlui/src/main/webapp/themes/mobile/readme.txt
         -->
+
+        <!-- Theme For LRDA -->
+        <theme name="LRDA" handle="1794/7549" path="LRDA/" />
+
+        <!-- Theme For UOLIB -->
+	<!-- <theme name="UOLibraries2016” regex=".*" path="UOLibraries2016/“ /> -->
+
     </themes>
 </xmlui>
