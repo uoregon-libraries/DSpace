@@ -272,22 +272,7 @@
                     </xsl:attribute>&#160;</script>
             </xsl:for-each>
             
-            
-            <!-- Add a google analytics script if the key is present -->
-            <xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']">
-                <script type="text/javascript"><xsl:text>
-                       var _gaq = _gaq || [];
-                       _gaq.push(['_setAccount', '</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']"/><xsl:text>']);
-                       _gaq.push(['_trackPageview']);
-
-                       (function() {
-                           var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                           ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                       })();
-               </xsl:text></script>
-            </xsl:if>
-            
+            <xsl:call-template name="buildHead-google-analytics" />
             
             <!-- Add the title in -->
             <xsl:variable name="page_title" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='title']" />
@@ -297,11 +282,11 @@
                         <xsl:text>About This Repository</xsl:text>
                     </xsl:when>
                     <xsl:when test="not($page_title) or (string-length($page_title) &lt; 1)">
-                                <i18n:text>xmlui.dri2xhtml.METS-1.0.no-title</i18n:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                                <xsl:copy-of select="$page_title/node()" />
-                        </xsl:otherwise>
+                        <i18n:text>xmlui.dri2xhtml.METS-1.0.no-title</i18n:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy-of select="$page_title/node()" />
+                    </xsl:otherwise>
                 </xsl:choose>
             </title>
 
@@ -319,6 +304,22 @@
         </head>
     </xsl:template>
     
+    
+    <xsl:template name="buildHead-google-analytics">
+            <!-- Add a google analytics script if the key is present -->
+            <xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']">
+                <script><xsl:text>
+                    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+                    ga('create', '</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']"/><xsl:text>', '</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='request'][@qualifier='serverName']"/><xsl:text>');
+                    ga('send', 'pageview');
+                </xsl:text></script>
+            </xsl:if>
+    </xsl:template>
+
     
     <!-- The header (distinct from the HTML head element) contains the title, subtitle, login box and various
         placeholders for header images -->
@@ -1627,7 +1628,7 @@
     <xsl:template match="dri:div/dri:head" priority="3">
         <xsl:variable name="head_count" select="count(ancestor::dri:div)"/>
         <!-- with the help of the font-sizing variable, the font-size of our header text is made continuously variable based on the character count -->
-        <xsl:variable name="font-sizing" select="365 - $head_count * 80 - string-length(current())"></xsl:variable>
+        <xsl:variable name="font-sizing" select="265 - $head_count * 80 - string-length(current())"></xsl:variable>
         <xsl:element name="h{$head_count}">
             <!-- in case the chosen size is less than 120%, don't let it go below. Shrinking stops at 120% -->
             <xsl:choose>
