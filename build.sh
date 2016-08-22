@@ -33,10 +33,15 @@ fi
 # Set up theme directory vars
 theme_source=$dspace_source/xmlui/themes/Mirage2
 dest=$(pwd)
-theme_dest=$dest/dspace-xmlui-mirage2/src/main/webapp
+repo_dest=$dest/dspace-xmlui-mirage2/src/main/webapp
+theme_dest=$dest/dspace/modules/xmlui-mirage2/src/main/webapp/themes/Mirage2
 
 if [ ! -d $theme_source ]; then
   echo "Unable to find theme source directory $theme_source"
+  exit 1
+fi
+if [ ! -d $repo_dest ]; then
+  echo "Unable to find repo destination directory $repo_dest"
   exit 1
 fi
 if [ ! -d $theme_dest ]; then
@@ -44,10 +49,15 @@ if [ ! -d $theme_dest ]; then
   exit 1
 fi
 
-echo "Pulling theme files from $theme_source to $theme_dest"
+echo "Pulling theme files from $theme_source to $repo_dest"
 
 # Make sure all rsyncs do the same stuff
 commonargs="-rltD --delete"
+rsync $commonargs $theme_source/styles/  $repo_dest/styles/
+rsync $commonargs $theme_source/xsl/     $repo_dest/xsl/
+rsync $commonargs $theme_source/images/  $repo_dest/images/
+
+# Copy all theme files into the theme's empty directory
 rsync $commonargs $theme_source/styles/  $theme_dest/styles/
 rsync $commonargs $theme_source/xsl/     $theme_dest/xsl/
 rsync $commonargs $theme_source/images/  $theme_dest/images/
