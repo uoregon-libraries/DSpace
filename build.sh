@@ -35,6 +35,8 @@ theme_source=$dspace_source/xmlui/themes/Mirage2
 dest=$(pwd)
 repo_dest=$dest/dspace-xmlui-mirage2/src/main/webapp
 theme_dest=$dest/dspace/modules/xmlui-mirage2/src/main/webapp/themes/Mirage2
+rm -rf $theme_dest
+mkdir -p $theme_dest
 
 if [ ! -d $theme_source ]; then
   echo "Unable to find theme source directory $theme_source"
