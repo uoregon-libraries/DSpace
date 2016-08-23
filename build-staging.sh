@@ -57,6 +57,9 @@ rsync $commonargs $theme_source/styles/  $theme_dest/styles/
 rsync $commonargs $theme_source/xsl/     $theme_dest/xsl/
 rsync $commonargs $theme_source/images/  $theme_dest/images/
 
+echo "Stopping tomcat"
+systemctl stop tomcat
+
 cmd="mvn package -Dmirage2.on=true -Dmirage2.deps.included=false"
 log="/var/log/dspace-build-mvn-$(date +"%s")"
 
@@ -69,6 +72,5 @@ log="/var/log/dspace-build-ant-$(date +"%s")"
 echo "Running $cmd - logging output to $log"
 su -l dspace -c "cd $dest/dspace/target/dspace-installer && $cmd" > $log
 
-echo "Restarting tomcat"
-systemctl stop tomcat
+echo "Starting tomcat"
 systemctl start tomcat
