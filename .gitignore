@@ -23,8 +23,8 @@ nbactions.xml
 nb-configuration.xml
 META-INF/
 
-## Ignore build.properties so custom overrides can live there
-/build.properties
+## Ignore various *.properties so custom overrides can live there
+/*.properties
 
 ##Mac noise
 .DS_Store

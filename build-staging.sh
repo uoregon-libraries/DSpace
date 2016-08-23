@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 #
-# build.sh rsyncs from a given source mirage2 dev location to this repo, then
-# builds dspace packages.  This must be run as root.
+# build-staging.sh rsyncs from a given source mirage2 dev location to this
+# repo's theme destination, copies staging.properties (which is kept out of the
+# repository), then builds dspace. This must be run as root.
 
 set -eu
 
-# Verify build.properties
-if [ ! -f ./build.properties ]; then
-  echo "You need to create and customize your build.properties file"
+# Verify staging.properties and copy it
+if [ ! -e ./staging.properties ]; then
+  echo "You must create and customize staging.properties before running this"
   echo
-  echo "    cp ./build.properties.sample ./build.properties"
-  echo "    vim ./build.properties"
+  echo "    cp ./build.properties.sample ./staging.properties"
+  echo "    vim ./staging.properties"
   exit 1
 fi
+
+cp staging.properties build.properties
 
 # Verify superuser
 if [ "$EUID" != "0" ]; then
@@ -23,17 +26,16 @@ fi
 # Verify command-line usage
 dspace_source=${1:-}
 if [ "$dspace_source" == "" ]; then
-  echo "Usage: ./build.sh [path to development webapps directory]"
+  echo "Usage: ./build-staging.sh [path to development webapps directory]"
   echo
   echo "Example:"
-  echo "    sudo -E ./build.sh /usr/local/dspace/webapps"
+  echo "    sudo -E ./build-staging.sh /usr/local/dspace/webapps"
   exit 1
 fi
 
 # Set up theme directory vars
 theme_source=$dspace_source/xmlui/themes/Mirage2
 dest=$(pwd)
-repo_dest=$dest/dspace-xmlui-mirage2/src/main/webapp
 theme_dest=$dest/dspace/modules/xmlui-mirage2/src/main/webapp/themes/Mirage2
 rm -rf $theme_dest
 mkdir -p $theme_dest
@@ -42,24 +44,15 @@ if [ ! -d $theme_source ]; then
   echo "Unable to find theme source directory $theme_source"
   exit 1
 fi
-if [ ! -d $repo_dest ]; then
-  echo "Unable to find repo destination directory $repo_dest"
-  exit 1
-fi
 if [ ! -d $theme_dest ]; then
   echo "Unable to find theme destination directory $theme_dest"
   exit 1
 fi
 
-echo "Pulling theme files from $theme_source to $repo_dest"
+echo "Pulling theme files from $theme_source to $theme_dest"
 
 # Make sure all rsyncs do the same stuff
 commonargs="-rltD --delete"
-rsync $commonargs $theme_source/styles/  $repo_dest/styles/
-rsync $commonargs $theme_source/xsl/     $repo_dest/xsl/
-rsync $commonargs $theme_source/images/  $repo_dest/images/
-
-# Copy all theme files into the theme's empty directory
 rsync $commonargs $theme_source/styles/  $theme_dest/styles/
 rsync $commonargs $theme_source/xsl/     $theme_dest/xsl/
 rsync $commonargs $theme_source/images/  $theme_dest/images/
