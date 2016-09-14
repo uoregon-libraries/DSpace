@@ -96,10 +96,11 @@ build() {
   echo "Pulling theme files from $theme_source to $theme_dest"
   copy_theme_files
 
+  run_maven
+
   echo "Stopping tomcat"
   systemctl stop tomcat
 
-  run_maven
   run_ant
 
   echo "Starting tomcat"
