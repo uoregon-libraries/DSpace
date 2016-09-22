@@ -86,7 +86,8 @@ public class EmbargoChecker {
      * Check a name against bundle names which are meant to be 100% public.
      * Public bundles are those which we expect to be unprotected, and which we
      * expect bitstreams inside to also be unprotected.  For us, this means
-     * licenses and metadata.
+     * licenses and metadata.  We include a hard-coded string, "LICENCE", as
+     * that's what one of our tools has been importing.
      *
      * @return true if the Bundle's name is in the list of 100% public bundle
      * names.
@@ -95,7 +96,8 @@ public class EmbargoChecker {
         String name = bn.getName();
         return name.equals(Constants.LICENSE_BUNDLE_NAME) ||
             name.equals(Constants.METADATA_BUNDLE_NAME) ||
-            name.equals(CreativeCommons.CC_BUNDLE_NAME);
+            name.equals(CreativeCommons.CC_BUNDLE_NAME) ||
+            name.equals("LICENCE");
     }
 
     /**
