@@ -77,7 +77,8 @@ public class EmbargoAuditor {
                 ec.checkEmbargo();
             }
             catch (Exception e) {
-                System.out.printf("ERROR: Unable to check %s for embargoes: %s", i.getHandle(), e);
+                System.err.printf("ERROR: Unable to check %s for embargoes: %s\n", i.getHandle(), e);
+                e.printStackTrace(System.err);
             }
         }
 
