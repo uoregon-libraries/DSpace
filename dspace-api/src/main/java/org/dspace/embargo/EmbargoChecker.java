@@ -113,8 +113,30 @@ public class EmbargoChecker {
     }
 
     // A public object must have ANONYMOUS in the list of read policies, and
-    // the policy must start now or prior
-    private boolean isPublic(DSpaceObject o) {
+    // the policy must start now or prior and never end
+    private boolean isPublic(DSpaceObject o) throws SQLException {
+        for (ResourcePolicy rp : getReadPolicies(o)) {
+            if (groupHasAnonymous(rp.getGroup())) {
+                if (rp.isDateValid() && rp.getEndDate() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Returns true if the given group is ANONYMOUS or has ANONYMOUS in its
+    // subgroups (recursively)
+    private boolean groupHasAnonymous(Group g) {
+        if (g.getID() == Group.ANONYMOUS_ID) {
+            return true;
+        }
+        for (Group sub : g.getMemberGroups()) {
+            if (groupHasAnonymous(sub)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
