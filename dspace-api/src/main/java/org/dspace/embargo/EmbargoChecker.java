@@ -78,7 +78,7 @@ public class EmbargoChecker {
             }
 
             // If it's a "visible" bundle, the bundle should be unprotected,
-            // but the bitstreams should be protected
+            // but the bitstreams can be protected
         }
     }
 
