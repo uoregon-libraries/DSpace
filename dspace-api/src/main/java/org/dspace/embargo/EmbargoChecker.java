@@ -16,6 +16,8 @@ import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.eperson.Group;
 import org.dspace.license.CreativeCommons;
 
 /**
@@ -120,13 +122,47 @@ public class EmbargoChecker {
     }
 
     private void reportNotPublic(DSpaceObject o) throws SQLException {
-        out.printf("WARNING: %s %s isn't public, and can only be read by:", item.getHandle(), o.getName());
+        out.printf("WARNING: Item %s's %s %s isn't public.  Readers:\n",
+            item.getHandle(), o.getName(), o.getTypeText());
         reportReaders(o);
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
         for (ResourcePolicy rp : getReadPolicies(o)) {
-            out.printf("FOO!"+rp);
+            EPerson eperson = rp.getEPerson();
+            Group group = rp.getGroup();
+            Date startDate = rp.getStartDate();
+            Date endDate = rp.getEndDate();
+
+            String groupOrPersonName = "UNKNOWN";
+            if (eperson != null) {
+                groupOrPersonName = eperson.getName() + " (person)";
+                if (group != null) {
+                    groupOrPersonName += " AND " + group.getName() + " (group)";
+                }
+            }
+            else if (group != null) {
+                groupOrPersonName = group.getName() + " (group)";
+            }
+
+            String dateString;
+            if (startDate == null) {
+                if (endDate == null) {
+                    dateString = "forever";
+                }
+                else {
+                    dateString = "until " + endDate.toString();
+                }
+            }
+            else {
+                if (endDate == null) {
+                    dateString = "starting " + startDate.toString();
+                }
+                else {
+                    dateString = "from " + startDate.toString() + " until " + endDate.toString();
+                }
+            }
+            out.printf("- %s has permission to %s %s\n", groupOrPersonName, rp.getActionText(), dateString);
         }
     }
 }
