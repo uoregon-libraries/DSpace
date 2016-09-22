@@ -76,10 +76,10 @@
         </step>
     </command>
     <command>
-        <name>embargo-lifter</name>
-        <description>Embargo manager tool used to check, list and lift embargoes</description>
+        <name>embargo-audit</name>
+        <description>Embargo tool used to check and display potentially invalid embargoes</description>
         <step>
-            <class>org.dspace.embargo.EmbargoManager</class>
+            <class>org.dspace.embargo.EmbargoAuditor</class>
         </step>
     </command>
     <command>
