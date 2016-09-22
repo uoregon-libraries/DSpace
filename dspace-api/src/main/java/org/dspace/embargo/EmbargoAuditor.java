@@ -34,9 +34,9 @@ public class EmbargoAuditor {
 
     // Metadata field components for user-supplied embargo terms
     // set from the DSpace configuration by init()
-    private static String terms_schema = null;
-    private static String terms_element = null;
-    private static String terms_qualifier = null;
+    private static String termsSchema = null;
+    private static String termsElement = null;
+    private static String termsQualifier = null;
 
     // Context is needed in too many places to not globalize it
     private static Context context = null;
@@ -164,12 +164,12 @@ public class EmbargoAuditor {
             throw new IllegalStateException("Missing required configuration property 'embargo.field.terms'.");
         }
 
-        String term_fields[] = terms.split("\\.", 3);
-        if (term_fields.length != 3) {
+        String termFields[] = terms.split("\\.", 3);
+        if (termFields.length != 3) {
             throw new IllegalStateException("Configuration property 'embargo.field.terms' is invalid.");
         }
-        terms_schema = term_fields[0];
-        terms_element = term_fields[1];
-        terms_qualifier = term_fields[2];
+        termsSchema = termFields[0];
+        termsElement = termFields[1];
+        termsQualifier = termFields[2];
     }
 }
