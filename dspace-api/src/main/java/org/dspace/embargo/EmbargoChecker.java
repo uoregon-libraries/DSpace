@@ -124,6 +124,9 @@ public class EmbargoChecker {
     // Returns true if the given group is ANONYMOUS or has ANONYMOUS in its
     // subgroups (recursively)
     private boolean groupHasAnonymous(Group g) {
+        if (g == null) {
+            return false;
+        }
         if (g.getID() == Group.ANONYMOUS_ID) {
             return true;
         }
