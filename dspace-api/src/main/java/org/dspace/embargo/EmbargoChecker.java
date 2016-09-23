@@ -70,6 +70,14 @@ public class EmbargoChecker {
     public boolean checkEmbargo()
         throws SQLException, AuthorizeException, IOException {
         boolean isValid = true;
+
+        // Items should always be public, otherwise the metadata and other
+        // public pieces will be hidden
+        if (!isPublic(item)) {
+            isValid = false;
+            reportNotPublic(item);
+        }
+
         for (Bundle bn : item.getBundles()) {
             // If it's a public bundle, the bundle and all its bitstreams must
             // be unprotected
