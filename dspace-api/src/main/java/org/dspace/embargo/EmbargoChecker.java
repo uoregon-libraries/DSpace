@@ -52,7 +52,9 @@ public class EmbargoChecker {
      * - Item is unprotected
      * - Public objects are unprotected
      * - All objects are available on campus
-     * - All protected objects share the same start date for their policy
+     * - All protected objects are only protected for 2 years max or
+     *   "grandfathered" permanent embargoes (protected forever, but ingested
+     *   prior to 2017)
      *
      * Some terms and definitions that are probably confusing:
      *
