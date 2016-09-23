@@ -68,12 +68,20 @@ public class EmbargoAuditor {
         List<Item> items = getItemList(line);
         EmbargoChecker ec;
         for (Item i : items) {
-            ec = new EmbargoChecker(context, i, System.out);
+            ec = new EmbargoChecker(context, i, line.hasOption('v'));
             try {
-                ec.checkEmbargo();
+                if (ec.checkEmbargo()) {
+                    System.out.printf("DEBUG - <%s> - audit success\n", i.getHandle());
+                }
+                else {
+                    System.out.printf("WARN - <%s> - audit failure\n", i.getHandle());
+                    for (String d : ec.details) {
+                        System.out.printf("INFO - %s\n", d);
+                    }
+                }
             }
             catch (Exception e) {
-                System.err.printf("ERROR: Unable to check %s for embargoes: %s\n", i.getHandle(), e);
+                System.err.printf("ERROR - Unable to check %s for embargoes: %s\n", i.getHandle(), e);
                 e.printStackTrace(System.err);
             }
         }
@@ -92,6 +100,7 @@ public class EmbargoAuditor {
         options.addOption("h", "help", false, "help");
         options.addOption("i", "identifier", true,
                         "Process ONLY this Handle identifier(s), which must be an Item.  Can be repeated.");
+        options.addOption("v", "verbose", false, "Show extra information about audit failures");
 
         CommandLine line = null;
         try {

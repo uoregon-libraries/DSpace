@@ -3,6 +3,7 @@ package org.dspace.embargo;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.Properties;
@@ -26,12 +27,14 @@ import org.dspace.license.CreativeCommons;
 public class EmbargoChecker {
     private Item item;
     private Context context;
-    private PrintStream out;
+    private boolean verbose;
+    public List<String> details;
 
-    public EmbargoChecker(Context c, Item i, PrintStream o) {
+    public EmbargoChecker(Context c, Item i, boolean v) {
         item = i;
         context = c;
-        out = o;
+        verbose = v;
+        details = new ArrayList<String>();
     }
 
     /**
@@ -56,17 +59,20 @@ public class EmbargoChecker {
      *   "UO only" group has READ permissions with no start date or a date in
      *   the past and no end date
      */
-    public void checkEmbargo()
+    public boolean checkEmbargo()
         throws SQLException, AuthorizeException, IOException {
+        boolean isValid = true;
         for (Bundle bn : item.getBundles()) {
             // If it's a public bundle, the bundle and all its bitstreams must
             // be unprotected
             if (bundleIsExpectedToBePublic(bn)) {
                 if (!isPublic(bn)) {
+                    isValid = false;
                     reportNotPublic(bn);
                 }
                 for (Bitstream bs : bn.getBitstreams()) {
                     if (!isPublic(bs)) {
+                        isValid = false;
                         reportNotPublic(bs);
                     }
                 }
@@ -76,6 +82,7 @@ public class EmbargoChecker {
             // If it's a "visible" bundle, the bundle should be unprotected,
             // but the bitstreams can be protected
         }
+        return isValid;
     }
 
     /**
@@ -145,9 +152,10 @@ public class EmbargoChecker {
     }
 
     private void reportNotPublic(DSpaceObject o) throws SQLException {
-        out.printf("WARNING: Item %s's %s %s isn't public.  Readers:\n",
-            item.getHandle(), o.getName(), o.getTypeText());
-        reportReaders(o);
+        details.add(String.format("%s (%s) should be public", o.getName(), o.getTypeText()));
+        if (verbose) {
+            reportReaders(o);
+        }
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
@@ -185,7 +193,8 @@ public class EmbargoChecker {
                     dateString = "from " + startDate.toString() + " until " + endDate.toString();
                 }
             }
-            out.printf("- %s has permission to %s %s\n", groupOrPersonName, rp.getActionText(), dateString);
+            details.add(String.format("%s has permission to %s %s",
+                groupOrPersonName, rp.getActionText(), dateString));
         }
     }
 }
