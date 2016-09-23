@@ -89,7 +89,14 @@ public class EmbargoChecker {
 
             // If it's a "visible" bundle, the bundle should be unprotected,
             // but the bitstreams can be protected
+            if (bundleIsExpectedToBeVisible(bn)) {
+                if (!isPublic(bn)) {
+                    isValid = false;
+                    reportNotPublic(bn);
+                }
+            }
         }
+
         return isValid;
     }
 
