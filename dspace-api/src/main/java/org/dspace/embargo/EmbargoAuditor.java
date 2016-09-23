@@ -15,7 +15,6 @@ import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.ItemIterator;
-import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.PluginManager;
@@ -28,12 +27,6 @@ import org.dspace.handle.HandleManager;
  * is no longer meant to be used.
  */
 public class EmbargoAuditor {
-    // Metadata field components for user-supplied embargo terms
-    // set from the DSpace configuration by init()
-    private static String termsSchema = null;
-    private static String termsElement = null;
-    private static String termsQualifier = null;
-
     // Context is needed in too many places to not globalize it
     private static Context context = null;
 
@@ -53,7 +46,7 @@ public class EmbargoAuditor {
      */
     public static void main(String argv[]) {
         CommandLine line = parseCLI(argv);
-        initTerms();
+        EmbargoChecker.initTerms();
 
         try {
             context = new Context();
@@ -161,21 +154,5 @@ public class EmbargoAuditor {
         }
 
         return items;
-    }
-
-    // initialize - get MD field setting from config
-    private static void initTerms() throws IllegalStateException {
-        String terms = ConfigurationManager.getProperty("embargo.field.terms");
-        if (terms == null) {
-            throw new IllegalStateException("Missing required configuration property 'embargo.field.terms'.");
-        }
-
-        String termFields[] = terms.split("\\.", 3);
-        if (termFields.length != 3) {
-            throw new IllegalStateException("Configuration property 'embargo.field.terms' is invalid.");
-        }
-        termsSchema = termFields[0];
-        termsElement = termFields[1];
-        termsQualifier = termFields[2];
     }
 }

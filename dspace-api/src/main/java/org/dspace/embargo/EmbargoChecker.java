@@ -15,6 +15,7 @@ import org.dspace.content.Bundle;
 import org.dspace.content.Bitstream;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
@@ -25,9 +26,16 @@ import org.dspace.license.CreativeCommons;
  * Embargo-checking class
  */
 public class EmbargoChecker {
+    // Metadata field components for user-supplied embargo terms
+    // set from the DSpace configuration by initTerms()
+    private static String termsSchema = null;
+    private static String termsElement = null;
+    private static String termsQualifier = null;
+
     private Item item;
     private Context context;
     private boolean verbose;
+
     public List<String> details;
 
     public EmbargoChecker(Context c, Item i, boolean v) {
@@ -196,5 +204,21 @@ public class EmbargoChecker {
             details.add(String.format("%s has permission to %s %s",
                 groupOrPersonName, rp.getActionText(), dateString));
         }
+    }
+
+    // initialize - get metadata field setting from config
+    public static void initTerms() throws IllegalStateException {
+        String terms = ConfigurationManager.getProperty("embargo.field.terms");
+        if (terms == null) {
+            throw new IllegalStateException("Missing required configuration property 'embargo.field.terms'.");
+        }
+
+        String termFields[] = terms.split("\\.", 3);
+        if (termFields.length != 3) {
+            throw new IllegalStateException("Configuration property 'embargo.field.terms' is invalid.");
+        }
+        termsSchema = termFields[0];
+        termsElement = termFields[1];
+        termsQualifier = termFields[2];
     }
 }
