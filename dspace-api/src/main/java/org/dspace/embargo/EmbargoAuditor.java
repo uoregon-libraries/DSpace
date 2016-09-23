@@ -61,6 +61,7 @@ public class EmbargoAuditor {
         EmbargoChecker ec;
 
         boolean verbose = line.hasOption('v');
+        boolean quiet = line.hasOption('q');
 
         for (Item i : items) {
             ec = new EmbargoChecker(context, i, verbose);
@@ -68,6 +69,9 @@ public class EmbargoAuditor {
                 if (!ec.checkEmbargo()) {
                     for (String d : ec.details) {
                         System.out.printf("WARN - <%s> - %s\n", i.getHandle(), d);
+                        if (quiet) {
+                            break;
+                        }
                     }
                 }
                 else if (verbose) {
@@ -95,6 +99,7 @@ public class EmbargoAuditor {
         options.addOption("i", "identifier", true,
                         "Process ONLY this Handle identifier(s), which must be an Item.  Can be repeated.");
         options.addOption("v", "verbose", false, "Show extra information about audit failures");
+        options.addOption("q", "quiet", false, "Only show the first error for each item");
 
         CommandLine line = null;
         try {
