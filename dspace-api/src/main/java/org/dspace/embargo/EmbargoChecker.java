@@ -95,6 +95,18 @@ public class EmbargoChecker {
                     reportNotPublic(bn);
                 }
             }
+
+            // Every bundle and bitstream should be available on campus
+            if (!isAvailableOnCampus(bn)) {
+                isValid = false;
+                reportNotAvailableOnCampus(bn);
+            }
+            for (Bitstream bs : bn.getBitstreams()) {
+                if (!isAvailableOnCampus(bs)) {
+                    isValid = false;
+                    reportNotAvailableOnCampus(bs);
+                }
+            }
         }
 
         return isValid;
@@ -143,6 +155,24 @@ public class EmbargoChecker {
         return false;
     }
 
+    // Available on campus means either being available publicly (having the
+    // anonymous group) or having the "UO only" group in the list of read
+    // policies, and the policy starts now or prior, and never ends
+    private boolean isAvailableOnCampus(DSpaceObject o) throws SQLException {
+        if (isPublic(o)) {
+            return true;
+        }
+
+        for (ResourcePolicy rp : getReadPolicies(o)) {
+            if (groupHasUOOnly(rp.getGroup())) {
+                if (rp.isDateValid() && rp.getEndDate() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // Returns true if the given group is ANONYMOUS or has ANONYMOUS in its
     // subgroups (recursively)
     private boolean groupHasAnonymous(Group g) {
@@ -161,6 +191,24 @@ public class EmbargoChecker {
         return false;
     }
 
+    // Returns true if the given group is UO only or has UO only in its
+    // subgroups (recursively)
+    private boolean groupHasUOOnly(Group g) {
+        if (g == null) {
+            return false;
+        }
+        if (g.getName().equals("UO only")) {
+            return true;
+        }
+        for (Group sub : g.getMemberGroups()) {
+            if (groupHasUOOnly(sub)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Shorter and clearer way to get at the read-policy list for an object
     private List<ResourcePolicy> getReadPolicies(DSpaceObject o) throws SQLException {
         return AuthorizeManager.getPoliciesActionFilter(context, o, Constants.READ);
@@ -168,6 +216,14 @@ public class EmbargoChecker {
 
     private void reportNotPublic(DSpaceObject o) throws SQLException {
         details.add(String.format("%s (%s) should be public", o.getName(), o.getTypeText()));
+        if (verbose) {
+            reportReaders(o);
+        }
+    }
+
+    private void reportNotAvailableOnCampus(DSpaceObject o) throws SQLException {
+        details.add(String.format("%s (%s) is neither publicly available nor available on campus",
+            o.getName(), o.getTypeText()));
         if (verbose) {
             reportReaders(o);
         }
