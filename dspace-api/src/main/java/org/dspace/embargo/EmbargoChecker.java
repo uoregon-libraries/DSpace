@@ -39,26 +39,22 @@ public class EmbargoChecker {
      * conditions must be true:
      *
      * - Item is unprotected
-     * - Public elements are unprotected
-     * - All elements are available on campus
-     * - All protected elements share the same start date for their policy
+     * - Public objects are unprotected
+     * - All objects are available on campus
+     * - All protected objects share the same start date for their policy
      *
      * Some terms and definitions that are probably confusing:
      *
-     * - "Element" refers to either a bundle or a bitstream.
-     * - "Public" elements are bundles or bitstreams we want exposed at all
+     * - "Public" objects are bundles or bitstreams we want exposed at all
      *   times, such as the license, text files, thumbnails, etc.
      * - "Unprotected" means one of the following is true:
-     *   - No access restrictions
-     *   - ANONYMOUS READ access in the past
-     *   - ANONYMOUS READ access with no start date
+     *   - ANONYMOUS READ access in the past with no end date
+     *   - ANONYMOUS READ access with no start date with no end date
      * - "Protected" means there's a policy for ANONYMOUS READ access, and its
      *   start date is in the future
-     * - Being "available on campus" means the element is unprotected or the
+     * - Being "available on campus" means the object is unprotected or the
      *   "UO only" group has READ permissions with no start date or a date in
-     *   the past
-     *
-     * @param context the DSpace context
+     *   the past and no end date
      */
     public void checkEmbargo()
         throws SQLException, AuthorizeException, IOException {
