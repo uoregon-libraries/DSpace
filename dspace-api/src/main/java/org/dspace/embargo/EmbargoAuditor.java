@@ -59,17 +59,19 @@ public class EmbargoAuditor {
 
         List<Item> items = getItemList(line);
         EmbargoChecker ec;
+
+        boolean verbose = line.hasOption('v');
+
         for (Item i : items) {
-            ec = new EmbargoChecker(context, i, line.hasOption('v'));
+            ec = new EmbargoChecker(context, i, verbose);
             try {
-                if (ec.checkEmbargo()) {
-                    System.out.printf("DEBUG - <%s> - audit success\n", i.getHandle());
-                }
-                else {
-                    System.out.printf("WARN - <%s> - audit failure\n", i.getHandle());
+                if (!ec.checkEmbargo()) {
                     for (String d : ec.details) {
-                        System.out.printf("INFO - %s\n", d);
+                        System.out.printf("WARN - <%s> - %s\n", i.getHandle(), d);
                     }
+                }
+                else if (verbose) {
+                    System.out.printf("DEBUG - <%s> - audit success\n", i.getHandle());
                 }
             }
             catch (Exception e) {

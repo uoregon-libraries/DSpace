@@ -72,10 +72,14 @@ public class EmbargoChecker {
         boolean isValid = true;
 
         // Items should always be public, otherwise the metadata and other
-        // public pieces will be hidden
+        // public pieces will be hidden.  It's not worth reporting all the
+        // other problems when the item is the main problem, unless verbose
+        // output was requested.
         if (!isPublic(item)) {
-            isValid = false;
             reportNotPublic(item);
+            if (!verbose) {
+                return false;
+            }
         }
 
         for (Bundle bn : item.getBundles()) {
