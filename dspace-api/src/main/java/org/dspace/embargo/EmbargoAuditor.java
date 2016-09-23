@@ -11,7 +11,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
@@ -29,9 +28,6 @@ import org.dspace.handle.HandleManager;
  * is no longer meant to be used.
  */
 public class EmbargoAuditor {
-    /** log4j category */
-    private static Logger log = Logger.getLogger(EmbargoAuditor.class);
-
     // Metadata field components for user-supplied embargo terms
     // set from the DSpace configuration by init()
     private static String termsSchema = null;
