@@ -56,7 +56,6 @@ public class EmbargoAuditor {
             System.exit(1);
         }
         context.setIgnoreAuthorization(true);
-        Date now = new Date();
 
         List<Item> items = getItemList(line);
         EmbargoChecker ec;
