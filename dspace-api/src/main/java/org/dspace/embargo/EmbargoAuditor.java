@@ -67,6 +67,9 @@ public class EmbargoAuditor {
             ec = new EmbargoChecker(context, i, verbose);
             try {
                 if (!ec.checkEmbargo()) {
+                    if (ec.details.size() == 0) {
+                        System.out.printf("WARN - <%s> - unspecified embargo problem!\n", i.getHandle());
+                    }
                     for (String d : ec.details) {
                         System.out.printf("WARN - <%s> - %s\n", i.getHandle(), d);
                         if (quiet) {
