@@ -13,8 +13,10 @@ import org.dspace.authorize.AuthorizeManager;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bundle;
 import org.dspace.content.Bitstream;
+import org.dspace.content.DCDate;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
+import org.dspace.content.Metadatum;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
@@ -31,6 +33,7 @@ public class EmbargoChecker {
     private static String termsSchema = null;
     private static String termsElement = null;
     private static String termsQualifier = null;
+    private static String termsOpen = null;
 
     private Item item;
     private Context context;
@@ -72,6 +75,8 @@ public class EmbargoChecker {
     public boolean checkEmbargo()
         throws SQLException, AuthorizeException, IOException {
         boolean isValid = true;
+        Date embargoDate = metadataEmbargoDate();
+        Date now = new Date();
 
         // Items should always be public, otherwise the metadata and other
         // public pieces will be hidden.  It's not worth reporting all the
@@ -98,6 +103,7 @@ public class EmbargoChecker {
                         reportNotPublic(bs);
                     }
                 }
+                // Ignore all further rules for public objects
                 continue;
             }
 
@@ -119,6 +125,24 @@ public class EmbargoChecker {
                 if (!isAvailableOnCampus(bs)) {
                     isValid = false;
                     reportNotAvailableOnCampus(bs);
+                }
+            }
+
+            // Is item expected to be under embargo?  If so, all bitstreams
+            // should be protected, and all non-visible bundles should be
+            // protected.  Public objects won't reach this block.
+            if (embargoDate != null && now.before(embargoDate)) {
+                if (!bundleIsExpectedToBeVisible(bn)) {
+                    if (!isProtected(bn)) {
+                        isValid = false;
+                        reportNotProtected(bn);
+                    }
+                }
+                for (Bitstream bs : bn.getBitstreams()) {
+                    if (!isProtected(bs)) {
+                        isValid = false;
+                        reportNotProtected(bs);
+                    }
                 }
             }
         }
@@ -187,6 +211,11 @@ public class EmbargoChecker {
         return false;
     }
 
+    // Protected just means anonymous doesn't currently have access
+    private boolean isProtected(DSpaceObject o) throws SQLException {
+        return !isPublic(o);
+    }
+
     // Returns true if the given group is ANONYMOUS or has ANONYMOUS in its
     // subgroups (recursively)
     private boolean groupHasAnonymous(Group g) {
@@ -243,6 +272,13 @@ public class EmbargoChecker {
         }
     }
 
+    private void reportNotProtected(DSpaceObject o) throws SQLException {
+        details.add(String.format("%s (%s) is expected to be protected, but isn't", o.getName(), o.getTypeText()));
+        if (verbose) {
+            reportReaders(o);
+        }
+    }
+
     private void reportReaders(DSpaceObject o) throws SQLException {
         for (ResourcePolicy rp : getReadPolicies(o)) {
             EPerson eperson = rp.getEPerson();
@@ -283,6 +319,21 @@ public class EmbargoChecker {
         }
     }
 
+    // Return the parsed date in the embargo metadata field, or null if there's
+    // no date or the date is before today
+    private Date metadataEmbargoDate() {
+        Metadatum terms[] = item.getMetadata(termsSchema, termsElement, termsQualifier, Item.ANY);
+        if (terms == null || terms.length == 0) {
+            return null;
+        }
+        String md = terms[0].value;
+        if (md.equals(termsOpen))
+        {
+            return EmbargoManager.FOREVER.toDate();
+        }
+        return new DCDate(md).toDate();
+    }
+
     // initialize - get metadata field setting from config
     public static void initTerms() throws IllegalStateException {
         String terms = ConfigurationManager.getProperty("embargo.field.terms");
@@ -297,5 +348,7 @@ public class EmbargoChecker {
         termsSchema = termFields[0];
         termsElement = termFields[1];
         termsQualifier = termFields[2];
+
+        termsOpen = ConfigurationManager.getProperty("embargo.terms.open");
     }
 }
