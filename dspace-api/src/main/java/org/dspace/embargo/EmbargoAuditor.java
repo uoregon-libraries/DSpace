@@ -29,6 +29,8 @@ import org.dspace.handle.HandleManager;
 public class EmbargoAuditor {
     // Context is needed in too many places to not globalize it
     private static Context context = null;
+    private static boolean verbose = false;
+    private static boolean quiet = false;
 
     /**
      * Command-line service to scan every Item and verify it's either embargoed
@@ -46,6 +48,8 @@ public class EmbargoAuditor {
      */
     public static void main(String argv[]) {
         CommandLine line = parseCLI(argv);
+        verbose = line.hasOption('v');
+        quiet = line.hasOption('q');
         EmbargoChecker.initTerms();
 
         try {
@@ -57,34 +61,11 @@ public class EmbargoAuditor {
         }
         context.setIgnoreAuthorization(true);
 
-        List<Item> items = getItemList(line);
-        EmbargoChecker ec;
-
-        boolean verbose = line.hasOption('v');
-        boolean quiet = line.hasOption('q');
-
-        for (Item i : items) {
-            ec = new EmbargoChecker(context, i, verbose);
-            try {
-                if (!ec.checkEmbargo()) {
-                    if (ec.details.size() == 0) {
-                        System.out.printf("WARN - <%s> - unspecified embargo problem!\n", i.getHandle());
-                    }
-                    for (String d : ec.details) {
-                        System.out.printf("WARN - <%s> - %s\n", i.getHandle(), d);
-                        if (quiet) {
-                            break;
-                        }
-                    }
-                }
-                else if (verbose) {
-                    System.out.printf("DEBUG - <%s> - audit success\n", i.getHandle());
-                }
-            }
-            catch (Exception e) {
-                System.err.printf("ERROR - Unable to check %s for embargoes: %s\n", i.getHandle(), e);
-                e.printStackTrace(System.err);
-            }
+        if (line.hasOption('i')) {
+            checkItems(line.getOptionValues('i'));
+        }
+        else {
+            checkAllItems();
         }
 
         try {
@@ -93,6 +74,66 @@ public class EmbargoAuditor {
         catch (SQLException e) {
             System.err.println("Error completing DSpace context: " + e);
             System.exit(1);
+        }
+    }
+
+    private static void checkItems(String[] ids) {
+        try {
+            List<Item> items = getItemsForIdentifiers(ids);
+            for (Item i : items) {
+                checkEmbargoes(i);
+            }
+        }
+        catch (Exception e) {
+            System.err.println("ERROR parsing one or more identifiers: " + e);
+            System.exit(1);
+        }
+    }
+
+    private static void checkAllItems() {
+        ItemIterator ii = null;
+        try {
+            ii = Item.findAll(context);
+        }
+        catch (Exception e) {
+            System.err.println("ERROR trying to collect all DSpace items: " + e);
+            System.exit(1);
+        }
+
+        try {
+            while (ii.hasNext()) {
+                checkEmbargoes(ii.next());
+            }
+        }
+        catch (Exception e) {
+            System.err.println("ERROR trying to get next DSpace item: " + e);
+            System.exit(1);
+        }
+    }
+
+    private static void checkEmbargoes(Item i) throws SQLException {
+        EmbargoChecker ec;
+
+        ec = new EmbargoChecker(context, i, verbose);
+        try {
+            if (!ec.checkEmbargo()) {
+                if (ec.details.size() == 0) {
+                    System.out.printf("WARN - <%s> - unspecified embargo problem!\n", i.getHandle());
+                }
+                for (String d : ec.details) {
+                    System.out.printf("WARN - <%s> - %s\n", i.getHandle(), d);
+                    if (quiet) {
+                        break;
+                    }
+                }
+            }
+            else if (verbose) {
+                System.out.printf("DEBUG - <%s> - audit success\n", i.getHandle());
+            }
+        }
+        catch (Exception e) {
+            System.err.printf("ERROR - Unable to check %s for embargoes: %s\n", i.getHandle(), e);
+            e.printStackTrace(System.err);
         }
     }
 
@@ -120,33 +161,6 @@ public class EmbargoAuditor {
         }
 
         return line;
-    }
-
-    private static List<Item> getItemList(CommandLine line) {
-        List<Item> items = new ArrayList<Item>();
-        if (line.hasOption('i')) {
-            try {
-                items = getItemsForIdentifiers(line.getOptionValues('i'));
-            }
-            catch (Exception e) {
-                System.err.println("ERROR parsing one or more identifiers: " + e);
-                System.exit(1);
-            }
-        }
-        else {
-            try {
-                ItemIterator ii = Item.findAll(context);
-                while (ii.hasNext()) {
-                    items.add(ii.next());
-                }
-            }
-            catch (Exception e) {
-                System.err.println("ERROR trying to collect all DSpace items: " + e);
-                System.exit(1);
-            }
-        }
-
-        return items;
     }
 
     private static List<Item> getItemsForIdentifiers(String identifiers[]) throws IllegalArgumentException, SQLException {
