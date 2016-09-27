@@ -116,8 +116,10 @@ public class EmbargoChecker {
                 }
             }
 
-            // Every bundle and bitstream should be available on campus
-            if (!isAvailableOnCampus(bn)) {
+            // Every bundle and bitstream should be available on campus - but
+            // don't report items which were expected to be visible or we're
+            // double-reporting errors
+            if (!bundleIsExpectedToBeVisible(bn) && !isAvailableOnCampus(bn)) {
                 isValid = false;
                 reportNotAvailableOnCampus(bn);
             }
