@@ -260,7 +260,8 @@ public class EmbargoChecker {
     }
 
     private void reportNotPublic(DSpaceObject o) throws SQLException {
-        details.add(String.format("%s (%s) should be public", o.getName(), o.getTypeText()));
+        details.add(String.format("%s (%s) expected to be public (anonymous access), but isn't",
+            o.getName(), o.getTypeText()));
         if (verbose) {
             reportReaders(o);
         }
@@ -275,7 +276,8 @@ public class EmbargoChecker {
     }
 
     private void reportNotProtected(DSpaceObject o) throws SQLException {
-        details.add(String.format("%s (%s) is expected to be protected, but isn't", o.getName(), o.getTypeText()));
+        details.add(String.format("%s (%s) is expected to be protected (based on the embargo field), but isn't",
+            o.getName(), o.getTypeText()));
         if (verbose) {
             reportReaders(o);
         }
