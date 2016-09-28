@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <commands>
     <command>
+        <name>audit-embargoes</name>
+        <description>Embargo tool used to check and display potentially invalid embargoes</description>
+        <step>
+            <class>org.dspace.embargo.EmbargoAuditor</class>
+        </step>
+    </command>
+    <command>
         <name>checker</name>
         <description>Run the checksum checker</description>
         <step>
@@ -73,13 +80,6 @@
         <description>Run a class directly</description>
         <step>
             <class>dsrun</class>
-        </step>
-    </command>
-    <command>
-        <name>embargo-audit</name>
-        <description>Embargo tool used to check and display potentially invalid embargoes</description>
-        <step>
-            <class>org.dspace.embargo.EmbargoAuditor</class>
         </step>
     </command>
     <command>
