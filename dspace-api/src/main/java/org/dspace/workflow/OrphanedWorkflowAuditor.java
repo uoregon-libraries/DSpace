@@ -23,8 +23,7 @@ import org.dspace.handle.HandleManager;
 /**
  * Audit command-line tool for checking for workflow problems.  We define
  * workflow problems narrowly at the moment: situations where an inactive user
- * is the only one in charge of review or approval on a collection or
- * community.
+ * is the only one in charge of review or approval on a collection.
  **/
 public class OrphanedWorkflowAuditor {
     // Context is needed in too many places to not globalize it
@@ -32,8 +31,8 @@ public class OrphanedWorkflowAuditor {
     private static boolean verbose = false;
 
     /**
-     * Command-line service to scan every community and collection, verifying
-     * we don't have inactive users as the only ones in review/approve roles.
+     * Command-line service to scan every collection, verifying we don't have
+     * inactive users as the only ones in review/approve roles.
      */
     public static void main(String argv[]) {
         parseCLI(argv);

@@ -9,7 +9,7 @@
     </command>
     <command>
         <name>audit-workflows</name>
-        <description>Check for "orphaned" workflows on communities and collections</description>
+        <description>Check for "orphaned" workflows on collections</description>
         <step>
             <class>org.dspace.workflow.OrphanedWorkflowAuditor</class>
         </step>
