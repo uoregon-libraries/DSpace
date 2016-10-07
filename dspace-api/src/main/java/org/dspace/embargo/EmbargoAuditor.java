@@ -114,16 +114,30 @@ public class EmbargoAuditor {
     private static void checkEmbargoes(Item i) throws SQLException {
         EmbargoChecker ec;
 
-        ec = new EmbargoChecker(context, i, verbose);
+        ec = new EmbargoChecker(context, i);
         try {
             if (!ec.checkEmbargo()) {
-                if (ec.details.size() == 0) {
-                    System.out.printf("WARN - <%s> - unspecified embargo problem!\n", i.getHandle());
+                if (ec.warnings.size() == 0 && ec.errors.size() == 0) {
+                    System.out.printf("ERROR - <%s> - unspecified embargo problem!\n", i.getHandle());
                 }
-                for (String d : ec.details) {
+                for (String d : ec.errors) {
+                    System.out.printf("ERROR - <%s> - %s\n", i.getHandle(), d);
+                    if (quiet) {
+                        break;
+                    }
+                }
+                for (String d : ec.warnings) {
                     System.out.printf("WARN - <%s> - %s\n", i.getHandle(), d);
                     if (quiet) {
                         break;
+                    }
+                }
+                if (verbose) {
+                    for (String d : ec.infos) {
+                        System.out.printf("INFO - <%s> - %s\n", i.getHandle(), d);
+                        if (quiet) {
+                            break;
+                        }
                     }
                 }
             }

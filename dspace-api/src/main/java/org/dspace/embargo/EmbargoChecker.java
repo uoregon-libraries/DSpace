@@ -37,15 +37,15 @@ public class EmbargoChecker {
 
     private Item item;
     private Context context;
-    private boolean verbose;
 
-    public List<String> details;
+    public List<String> warnings, errors, infos;
 
-    public EmbargoChecker(Context c, Item i, boolean v) {
+    public EmbargoChecker(Context c, Item i) {
         item = i;
         context = c;
-        verbose = v;
-        details = new ArrayList<String>();
+        warnings = new ArrayList<String>();
+        errors = new ArrayList<String>();
+        infos = new ArrayList<String>();
     }
 
     /**
@@ -80,14 +80,9 @@ public class EmbargoChecker {
         Date now = new Date();
 
         // Items should always be public, otherwise the metadata and other
-        // public pieces will be hidden.  It's not worth reporting all the
-        // other problems when the item is the main problem, unless verbose
-        // output was requested.
+        // public pieces will be hidden
         if (!isPublic(item)) {
             reportNotPublic(item);
-            if (!verbose) {
-                return false;
-            }
         }
 
         for (Bundle bn : item.getBundles()) {
@@ -261,27 +256,21 @@ public class EmbargoChecker {
     }
 
     private void reportNotPublic(DSpaceObject o) throws SQLException {
-        details.add(String.format("%s (%s) expected to be public (anonymous access), but isn't",
+        warnings.add(String.format("%s (%s) expected to be public (anonymous access), but isn't",
             o.getName(), o.getTypeText()));
-        if (verbose) {
-            reportReaders(o);
-        }
+        reportReaders(o);
     }
 
     private void reportNotAvailableOnCampus(DSpaceObject o) throws SQLException {
-        details.add(String.format("%s (%s) is neither publicly available nor available on campus",
+        warnings.add(String.format("%s (%s) is neither publicly available nor available on campus",
             o.getName(), o.getTypeText()));
-        if (verbose) {
-            reportReaders(o);
-        }
+        reportReaders(o);
     }
 
     private void reportNotProtected(DSpaceObject o) throws SQLException {
-        details.add(String.format("%s (%s) is expected to be protected (based on the embargo field), but isn't",
+        errors.add(String.format("%s (%s) is expected to be protected (based on the embargo field), but isn't",
             o.getName(), o.getTypeText()));
-        if (verbose) {
-            reportReaders(o);
-        }
+        reportReaders(o);
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
@@ -319,7 +308,7 @@ public class EmbargoChecker {
                     dateString = "from " + startDate.toString() + " until " + endDate.toString();
                 }
             }
-            details.add(String.format("%s has permission to %s %s",
+            infos.add(String.format("%s has permission to %s %s",
                 groupOrPersonName, rp.getActionText(), dateString));
         }
     }
