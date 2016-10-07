@@ -52,17 +52,6 @@ public class EmbargoAuditor {
         quiet = line.hasOption('q');
         EmbargoChecker.initTerms();
 
-        // I really want it to be clear to whomever reads the report why
-        // certain messages get printed out.  This could be our DSpace
-        // administrator, various systems people, or even myself in six months.
-        System.out.println("Assumptions being made:");
-        System.out.println("- Top-level objects (ITEM) should be public");
-        System.out.println("- License and metadata (BUNDLE) should be public");
-        System.out.println("- Every BITSTREAM in a license/metadata BUNDLE should be public");
-        System.out.println("- ALL objects should be visible to the 'UO only' group");
-        System.out.println("- If dc.description.embargo is set, non-public items should be campus-only");
-        System.out.println("");
-
         try {
             context = new Context();
         }
