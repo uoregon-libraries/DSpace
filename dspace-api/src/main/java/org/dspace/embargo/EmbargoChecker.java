@@ -112,15 +112,16 @@ public class EmbargoChecker {
                 }
             }
 
-            // Every bundle and bitstream should be available on campus - but
-            // don't report items which were expected to be visible or we're
-            // double-reporting errors
-            if (!bundleIsExpectedToBeVisible(bn) && !isAvailableOnCampus(bn)) {
+            // Every bundle and bitstream should be available on campus or
+            // explicitly fully embargoed by explicitly giving read to the
+            // admins group - but don't report items which were expected to be
+            // visible or we're double-reporting errors
+            if (!bundleIsExpectedToBeVisible(bn) && !isAvailableOnCampus(bn) && !isExplicitlyFullyEmbargoed(bn)) {
                 isValid = false;
                 reportNotAvailableOnCampus(bn);
             }
             for (Bitstream bs : bn.getBitstreams()) {
-                if (!isAvailableOnCampus(bs)) {
+                if (!isAvailableOnCampus(bs) && !isExplicitlyFullyEmbargoed(bs)) {
                     isValid = false;
                     reportNotAvailableOnCampus(bs);
                 }
@@ -209,27 +210,57 @@ public class EmbargoChecker {
         return false;
     }
 
+    // Right now this is a somewhat "magic" rule.  Being fully embargoed
+    // actually just means it's not public or available on campus, but somebody
+    // explicitly set the administrator group to have Read access.
+    private boolean isExplicitlyFullyEmbargoed(DSpaceObject o) throws SQLException {
+        if (isPublic(o) || isAvailableOnCampus(o)) {
+            return false;
+        }
+
+        for (ResourcePolicy rp : getReadPolicies(o)) {
+            if (groupHasAdministrator(rp.getGroup())) {
+                if (rp.isDateValid()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // Protected just means anonymous doesn't currently have access
     private boolean isProtected(DSpaceObject o) throws SQLException {
         return !isPublic(o);
     }
 
-    // Returns true if the given group is ANONYMOUS or has ANONYMOUS in its
-    // subgroups (recursively)
-    private boolean groupHasAnonymous(Group g) {
+    // Returns true if group's id is id or has a group with that id in any of
+    // its subgroups (recursively)
+    private boolean groupIsOrHasGroupID(Group g, int id) {
         if (g == null) {
             return false;
         }
-        if (g.getID() == Group.ANONYMOUS_ID) {
+        if (g.getID() == id) {
             return true;
         }
         for (Group sub : g.getMemberGroups()) {
-            if (groupHasAnonymous(sub)) {
+            if (groupIsOrHasGroupID(sub, id)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    // Returns true if the given group is ANONYMOUS or has ANONYMOUS in its
+    // subgroups (recursively)
+    private boolean groupHasAnonymous(Group g) {
+        return groupIsOrHasGroupID(g, Group.ANONYMOUS_ID);
+    }
+
+    // Returns true if the given group is administrators or has administrators
+    // in its subgroups (recursively)
+    private boolean groupHasAdministrator(Group g) {
+        return groupIsOrHasGroupID(g, Group.ADMIN_ID);
     }
 
     // Returns true if the given group is UO only or has UO only in its
