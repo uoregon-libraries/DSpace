@@ -121,10 +121,6 @@ public class EmbargoChecker {
             // per our decision around 2016-10-07, we don't care about bundles
             // being protected as long as their bitstreams are protected.
             if (embargoDate != null && now.before(embargoDate)) {
-                if (!isProtected(bn)) {
-                    isValid = false;
-                    reportNotProtected(bn);
-                }
                 for (Bitstream bs : bn.getBitstreams()) {
                     if (!isProtected(bs)) {
                         isValid = false;
