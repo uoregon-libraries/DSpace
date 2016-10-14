@@ -103,20 +103,9 @@ public class EmbargoChecker {
                 continue;
             }
 
-            // If it's a "visible" bundle, the bundle should be unprotected,
-            // but the bitstreams can be protected
-            if (bundleIsExpectedToBeVisible(bn)) {
-                if (!isPublic(bn)) {
-                    isValid = false;
-                    reportNotPublic(bn);
-                }
-            }
-
             // Every bundle and bitstream should be available on campus or
-            // explicitly fully embargoed by explicitly giving read to the
-            // admins group - but don't report items which were expected to be
-            // visible or we're double-reporting errors
-            if (!bundleIsExpectedToBeVisible(bn) && !isAvailableOnCampus(bn) && !isExplicitlyFullyEmbargoed(bn)) {
+            // fully embargoed by explicitly giving read to the admins group
+            if (!isAvailableOnCampus(bn) && !isExplicitlyFullyEmbargoed(bn)) {
                 isValid = false;
                 reportNotAvailableOnCampus(bn);
             }
@@ -128,14 +117,13 @@ public class EmbargoChecker {
             }
 
             // Is item expected to be under embargo?  If so, all bitstreams
-            // should be protected, and all non-visible bundles should be
-            // protected.  Public objects won't reach this block.
+            // should be protected.  Public objects won't reach this block, and
+            // per our decision around 2016-10-07, we don't care about bundles
+            // being protected as long as their bitstreams are protected.
             if (embargoDate != null && now.before(embargoDate)) {
-                if (!bundleIsExpectedToBeVisible(bn)) {
-                    if (!isProtected(bn)) {
-                        isValid = false;
-                        reportNotProtected(bn);
-                    }
+                if (!isProtected(bn)) {
+                    isValid = false;
+                    reportNotProtected(bn);
                 }
                 for (Bitstream bs : bn.getBitstreams()) {
                     if (!isProtected(bs)) {
@@ -165,18 +153,6 @@ public class EmbargoChecker {
             name.equals(Constants.METADATA_BUNDLE_NAME) ||
             name.equals(CreativeCommons.CC_BUNDLE_NAME) ||
             name.equals("LICENCE");
-    }
-
-    /**
-     * Check a name against bundle names which are meant to be visible to the
-     * public.  These semi-public bundles are ones we expect to be unprotected,
-     * but their bitstreams should be protected.
-     *
-     * @return true if the name is in the list of visible bundle names.
-     */
-    private boolean bundleIsExpectedToBeVisible(Bundle bn) {
-        String name = bn.getName();
-        return name.equals("TEXT") || name.equals("THUMBNAIL");
     }
 
     // A public object must have ANONYMOUS in the list of read policies, and
