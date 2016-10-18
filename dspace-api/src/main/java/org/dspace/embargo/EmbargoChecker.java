@@ -37,6 +37,9 @@ public class EmbargoChecker {
 
     private Item item;
     private Context context;
+    private Date embargoDate = null;
+    private Date now = null;
+    private Date available = null;
 
     public List<String> warnings, errors, infos;
 
@@ -46,6 +49,10 @@ public class EmbargoChecker {
         warnings = new ArrayList<String>();
         errors = new ArrayList<String>();
         infos = new ArrayList<String>();
+
+        embargoDate = metadataEmbargoDate();
+        available = itemAvailableDate();
+        now = new Date();
     }
 
     /**
@@ -76,9 +83,6 @@ public class EmbargoChecker {
     public boolean checkEmbargo()
         throws SQLException, AuthorizeException, IOException {
         boolean isValid = true;
-        Date embargoDate = metadataEmbargoDate();
-        Date now = new Date();
-        Date available = itemAvailableDate();
 
         // Items should always be public, otherwise the metadata and other
         // public pieces will be hidden
@@ -95,7 +99,7 @@ public class EmbargoChecker {
         }
         else if (available.after(now)) {
             isValid = false;
-            reportAvailabilityDateAfterNow(available);
+            reportAvailabilityDateAfterNow();
             available = null;
         }
 
@@ -306,8 +310,8 @@ public class EmbargoChecker {
         errors.add("Availability date (dc.date.available) is empty or invalid");
     }
 
-    private void reportAvailabilityDateAfterNow(Date dt) {
-        errors.add(String.format("Availability date (dc.date.available, %s) is after today", dt));
+    private void reportAvailabilityDateAfterNow() {
+        errors.add(String.format("Availability date (dc.date.available, %s) is after today", available));
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
