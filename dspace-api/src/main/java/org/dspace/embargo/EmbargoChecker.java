@@ -172,12 +172,9 @@ public class EmbargoChecker {
     // A public object must have ANONYMOUS in the list of read policies, and
     // the policy must start now or prior and never end
     private boolean isPublic(DSpaceObject o) throws SQLException {
-        for (ResourcePolicy rp : getReadPolicies(o)) {
-            if (groupHasAnonymous(rp.getGroup())) {
-                if (rp.isDateValid() && rp.getEndDate() == null) {
-                    return true;
-                }
-            }
+        ResourcePolicy rp = getPublicReadPolicy(o);
+        if (rp.isDateValid() && rp.getEndDate() == null) {
+            return true;
         }
         return false;
     }
@@ -233,6 +230,19 @@ public class EmbargoChecker {
             return null;
         }
         return new DCDate(terms[0].value).toDate();
+    }
+
+    // Find the read permissions for any groups which include anonymous,
+    // returning the first.  If multiple groups include anonymous and have been
+    // set to have conflicting read permission, this function will be all kinds
+    // of wrong.
+    private ResourcePolicy getPublicReadPolicy(DSpaceObject o) throws SQLException {
+        for (ResourcePolicy rp : getReadPolicies(o)) {
+            if (groupHasAnonymous(rp.getGroup())) {
+                return rp;
+            }
+        }
+        return null;
     }
 
     // Returns true if group's id is id or has a group with that id in any of
