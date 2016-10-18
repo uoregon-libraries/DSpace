@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
@@ -146,6 +147,18 @@ public class EmbargoChecker {
                     }
                 }
             }
+
+            // Bundle and bitstreams should be publicly available eventually
+            if (!isPublicAccessDateValid(bn)) {
+                isValid = false;
+                reportPublicAccessDateInvalid(bn);
+            }
+            for (Bitstream bs : bn.getBitstreams()) {
+                if (!isPublicAccessDateValid(bs)) {
+                    isValid = false;
+                    reportPublicAccessDateInvalid(bs);
+                }
+            }
         }
 
         return isValid;
@@ -232,6 +245,26 @@ public class EmbargoChecker {
         return new DCDate(terms[0].value).toDate();
     }
 
+    // Grandfathered items are those ingested during a specific time period
+    // when we allowed "forever" embargoes
+    private boolean isIngestWithinGrandfatheredEmbargoTime() {
+        Calendar c = Calendar.getInstance();
+
+        // If it's prior to 2014, it's not grandfathered
+        c.set(2014, 1, 1);
+        if (available.before(c.getTime())) {
+            return false;
+        }
+
+        // If it's after September 2016, it's not grandfathered
+        c.set(2016, 9, 1);
+        if (available.after(c.getTime())) {
+            return false;
+        }
+
+        return true;
+    }
+
     // Find the read permissions for any groups which include anonymous,
     // returning the first.  If multiple groups include anonymous and have been
     // set to have conflicting read permission, this function will be all kinds
@@ -243,6 +276,32 @@ public class EmbargoChecker {
             }
         }
         return null;
+    }
+
+    // Public access date being valid means that the object will be visible
+    // within a set maximum date range of the item's creation unless the item
+    // was ingested during the period we allowed "forever" embargoes"
+    private boolean isPublicAccessDateValid(DSpaceObject o) throws SQLException {
+        if (isIngestWithinGrandfatheredEmbargoTime()) {
+            return true;
+        }
+
+        ResourcePolicy rp = getPublicReadPolicy(o);
+
+        // Items must not publicly "expire"
+        if (rp.getEndDate() != null) {
+            return false;
+        }
+
+        // Items must not be embargoed longer than 2 years
+        Calendar c = Calendar.getInstance();
+        c.setTime(available);
+        c.add(Calendar.YEAR, 2);
+        if (rp.getStartDate().after(c.getTime())) {
+            return false;
+        }
+
+        return true;
     }
 
     // Returns true if group's id is id or has a group with that id in any of
@@ -322,6 +381,11 @@ public class EmbargoChecker {
 
     private void reportAvailabilityDateAfterNow() {
         errors.add(String.format("Availability / accession date (%s) is after today", available));
+    }
+
+    private void reportPublicAccessDateInvalid(DSpaceObject o) throws SQLException {
+        errors.add(String.format("%s (%s) has availability / accession date (%s) too far beyond today",
+            o.getName(), o.getTypeText(), available));
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
