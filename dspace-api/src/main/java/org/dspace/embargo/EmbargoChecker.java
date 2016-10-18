@@ -83,6 +83,7 @@ public class EmbargoChecker {
         // Items should always be public, otherwise the metadata and other
         // public pieces will be hidden
         if (!isPublic(item)) {
+            isValid = false;
             reportNotPublic(item);
         }
 
