@@ -307,11 +307,11 @@ public class EmbargoChecker {
     }
 
     private void reportNullAvailabilityDate() {
-        errors.add("Availability date (dc.date.available) is empty or invalid");
+        errors.add("Availability / accession date is empty or invalid");
     }
 
     private void reportAvailabilityDateAfterNow() {
-        errors.add(String.format("Availability date (dc.date.available, %s) is after today", available));
+        errors.add(String.format("Availability / accession date (%s) is after today", available));
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
