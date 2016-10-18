@@ -78,11 +78,24 @@ public class EmbargoChecker {
         boolean isValid = true;
         Date embargoDate = metadataEmbargoDate();
         Date now = new Date();
+        Date available = itemAvailableDate();
 
         // Items should always be public, otherwise the metadata and other
         // public pieces will be hidden
         if (!isPublic(item)) {
             reportNotPublic(item);
+        }
+
+        // Ingest date should be valid or else we don't know how to do
+        // public-date-validity checking
+        if (available == null) {
+            isValid = false;
+            reportNullAvailabilityDate();
+        }
+        else if (available.after(now)) {
+            isValid = false;
+            reportAvailabilityDateAfterNow(available);
+            available = null;
         }
 
         for (Bundle bn : item.getBundles()) {
@@ -205,6 +218,18 @@ public class EmbargoChecker {
         return !isPublic(o);
     }
 
+    // Returns the dc.date.available value as a Date object
+    private Date itemAvailableDate() {
+        Metadatum terms[] = item.getMetadata("dc", "date", "available", Item.ANY);
+        if (terms == null || terms.length == 0) {
+            terms = item.getMetadata("dc", "date", "accessioned", Item.ANY);
+        }
+        if (terms == null || terms.length == 0) {
+            return null;
+        }
+        return new DCDate(terms[0].value).toDate();
+    }
+
     // Returns true if group's id is id or has a group with that id in any of
     // its subgroups (recursively)
     private boolean groupIsOrHasGroupID(Group g, int id) {
@@ -274,6 +299,14 @@ public class EmbargoChecker {
         errors.add(String.format("%s (%s) is expected to be protected (based on the embargo field), but isn't",
             o.getName(), o.getTypeText()));
         reportReaders(o);
+    }
+
+    private void reportNullAvailabilityDate() {
+        errors.add("Availability date (dc.date.available) is empty or invalid");
+    }
+
+    private void reportAvailabilityDateAfterNow(Date dt) {
+        errors.add(String.format("Availability date (dc.date.available, %s) is after today", dt));
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
