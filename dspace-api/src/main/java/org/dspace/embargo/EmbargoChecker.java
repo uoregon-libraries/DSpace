@@ -288,6 +288,9 @@ public class EmbargoChecker {
         }
 
         ResourcePolicy rp = getPublicReadPolicy(o);
+        if (rp == null) {
+            return false;
+        }
 
         // Items must not publicly "expire"
         if (rp.getEndDate() != null) {
@@ -298,7 +301,7 @@ public class EmbargoChecker {
         Calendar c = Calendar.getInstance();
         c.setTime(available);
         c.add(Calendar.YEAR, 2);
-        if (rp.getStartDate().after(c.getTime())) {
+        if (rp.getStartDate() != null && rp.getStartDate().before(c.getTime())) {
             return false;
         }
 
