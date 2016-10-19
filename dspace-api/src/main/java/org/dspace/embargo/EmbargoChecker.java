@@ -263,6 +263,7 @@ public class EmbargoChecker {
             return false;
         }
 
+        infos.add("item is grandfathered");
         return true;
     }
 
@@ -291,6 +292,9 @@ public class EmbargoChecker {
         if (rp == null) {
             return false;
         }
+
+        infos.add(String.format("%s (%s) public read policy from %s to %s",
+            o.getName(), o.getTypeText(), rp.getStartDate(), rp.getEndDate()));
 
         // Items must not publicly "expire"
         if (rp.getEndDate() != null) {
@@ -388,8 +392,8 @@ public class EmbargoChecker {
     }
 
     private void reportPublicAccessDateInvalid(DSpaceObject o) throws SQLException {
-        errors.add(String.format("%s (%s) has availability / accession date (%s) too far beyond today",
-            o.getName(), o.getTypeText(), available));
+        errors.add(String.format("%s (%s) has public access too far beyond today",
+            o.getName(), o.getTypeText()));
     }
 
     private void reportReaders(DSpaceObject o) throws SQLException {
