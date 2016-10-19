@@ -384,15 +384,15 @@ public class EmbargoChecker {
     }
 
     private void reportNullAvailabilityDate() {
-        errors.add("Availability / accession date is empty or invalid");
+        warnings.add("Availability / accession date is empty or invalid");
     }
 
     private void reportAvailabilityDateAfterNow() {
-        errors.add(String.format("Availability / accession date (%s) is after today", available));
+        warnings.add(String.format("Availability / accession date (%s) is after today", available));
     }
 
     private void reportPublicAccessDateInvalid(DSpaceObject o) throws SQLException {
-        errors.add(String.format("%s (%s) has public access too far beyond today",
+        warnings.add(String.format("%s (%s) has public access too far beyond today",
             o.getName(), o.getTypeText()));
     }
 
