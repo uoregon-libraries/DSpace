@@ -46,7 +46,7 @@ public class EmbargoAuditor {
      *                      an Item.  Can be repeated.</dd>
      * </dl>
      */
-    public static void main(String argv[]) {
+    public static void main(String argv[]) throws Exception {
         CommandLine line = parseCLI(argv);
         verbose = line.hasOption('v');
         quiet = line.hasOption('q');
@@ -57,7 +57,7 @@ public class EmbargoAuditor {
         }
         catch (SQLException e) {
             System.err.println("Error getting DSpace context: " + e);
-            System.exit(1);
+            throw e;
         }
         context.setIgnoreAuthorization(true);
 
@@ -73,11 +73,11 @@ public class EmbargoAuditor {
         }
         catch (SQLException e) {
             System.err.println("Error completing DSpace context: " + e);
-            System.exit(1);
+            throw e;
         }
     }
 
-    private static void checkItems(String[] ids) {
+    private static void checkItems(String[] ids) throws Exception {
         try {
             List<Item> items = getItemsForIdentifiers(ids);
             for (Item i : items) {
@@ -86,18 +86,18 @@ public class EmbargoAuditor {
         }
         catch (Exception e) {
             System.err.println("ERROR parsing one or more identifiers: " + e);
-            System.exit(1);
+            throw e;
         }
     }
 
-    private static void checkAllItems() {
+    private static void checkAllItems() throws Exception {
         ItemIterator ii = null;
         try {
             ii = Item.findAll(context);
         }
         catch (Exception e) {
             System.err.println("ERROR trying to collect all DSpace items: " + e);
-            System.exit(1);
+            throw e;
         }
 
         try {
@@ -107,11 +107,11 @@ public class EmbargoAuditor {
         }
         catch (Exception e) {
             System.err.println("ERROR trying to get next DSpace item: " + e);
-            System.exit(1);
+            throw e;
         }
     }
 
-    private static void checkEmbargoes(Item i) throws SQLException {
+    private static void checkEmbargoes(Item i) throws Exception {
         EmbargoChecker ec;
 
         ec = new EmbargoChecker(context, i);
@@ -147,7 +147,7 @@ public class EmbargoAuditor {
         }
         catch (Exception e) {
             System.err.printf("ERROR - Unable to check %s for embargoes: %s\n", i.getHandle(), e);
-            e.printStackTrace(System.err);
+            throw e;
         }
     }
 
