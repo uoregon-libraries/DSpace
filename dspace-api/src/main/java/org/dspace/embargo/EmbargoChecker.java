@@ -183,10 +183,11 @@ public class EmbargoChecker {
     }
 
     // A public object must have ANONYMOUS in the list of read policies, and
-    // the policy must start now or prior and never end
+    // the policy must start now or prior and never end.  Lack of policies does
+    // *not* default to public access.
     private boolean isPublic(DSpaceObject o) throws SQLException {
         ResourcePolicy rp = getPublicReadPolicy(o);
-        if (rp.isDateValid() && rp.getEndDate() == null) {
+        if (rp != null && rp.isDateValid() && rp.getEndDate() == null) {
             return true;
         }
         return false;
