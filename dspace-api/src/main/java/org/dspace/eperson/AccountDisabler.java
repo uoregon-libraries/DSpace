@@ -57,7 +57,7 @@ public class AccountDisabler {
 
         recalculateCreateDates();
         disableAccountsActiveBefore(lastActivityThreshold, command.hasOption('n'));
-        disableAccountsCreatedBefore(createThreshold, command.hasOption('n'));
+        disableUnusedAccountsCreatedBefore(createThreshold, command.hasOption('n'));
     }
 
     // Reads all accounts with no externally stored creation date, and stores
@@ -235,9 +235,55 @@ public class AccountDisabler {
         ctx.complete();
     }
 
-    // Reads all external create dates and disables accounts created prior to dt
-    private static void disableAccountsCreatedBefore(Date dt, boolean dryrun) throws SQLException {
-        // TODO: Implement me!
+    // Reads all external create dates and disables accounts created prior to
+    // dt if the account hasn't been used (null lastActivity)
+    private static void disableUnusedAccountsCreatedBefore(Date dt, boolean dryrun) throws SQLException {
+        if (dt == null) {
+            System.err.println("DEBUG - not disabling based on create date");
+            return;
+        }
+
+        System.err.println("DEBUG - disabling accounts with no activity created prior to " + dt);
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.add(Calendar.MONTH, 1);
+        if (c.getTime().after(now)) {
+            System.err.println("ERROR - Refusing to disable accounts created in the past month");
+            return;
+        }
+
+        Context ctx = new Context();
+        ctx.turnOffAuthorisationSystem();
+
+        for (Map.Entry<Integer,Date> entry : idToCreateDate.entrySet()) {
+            int id = entry.getKey();
+            Date created = entry.getValue();
+            if (created.after(dt)) {
+                continue;
+            }
+
+            EPerson ep = EPerson.find(ctx, id);
+            Date lastActive = ep.getLastActive();
+            if (lastActive != null) {
+                continue;
+            }
+
+            if (dryrun) {
+                System.err.println("DEBUG - [DRY RUN] Disabling login for " + ep.getEmail());
+            }
+            else {
+                System.err.println("DEBUG - Disabling login for " + ep.getEmail());
+                try {
+                    ep.update();
+                } catch (SQLException | AuthorizeException e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+        }
+
+        ctx.restoreAuthSystemState();
+        ctx.complete();
     }
 
     private static CommandLine parseCLI(String argv[]) {
