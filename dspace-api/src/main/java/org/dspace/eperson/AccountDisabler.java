@@ -162,7 +162,7 @@ public class AccountDisabler {
         }
 
         try {
-            BufferedWriter w = Files.newBufferedWriter(tempFile);
+            BufferedWriter w = Files.newBufferedWriter(tempFile, StandardCharsets.UTF_8);
             for (Map.Entry<Integer,Date> entry : idToCreateDate.entrySet()) {
                 w.write(entry.getKey() + "\t" + dateFormat.format(entry.getValue()) + "\n");
             }
