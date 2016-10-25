@@ -170,3 +170,10 @@ loglevel.other = INFO
 loglevel.dspace = INFO
 # loglevel.dspace: Log level for all DSpace-specific code (org.dspace.*)
 # Possible values (from most to least info): DEBUG, INFO, WARN, ERROR, FATAL
+
+###################
+# CUSTOM SETTINGS #
+###################
+
+# Filename for map of eperson IDs to their (very rough guess) create date
+eperson.createmap.filename = ${dspace.install.dir}/etc/eperson-createmap.tsv

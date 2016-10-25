@@ -15,6 +15,13 @@
         </step>
     </command>
     <command>
+        <name>account-disabler</name>
+        <description>EPerson tool for removing login privileges for inactive accounts</description>
+        <step>
+            <class>org.dspace.eperson.AccountDisabler</class>
+        </step>
+    </command>
+    <command>
         <name>checker</name>
         <description>Run the checksum checker</description>
         <step>
