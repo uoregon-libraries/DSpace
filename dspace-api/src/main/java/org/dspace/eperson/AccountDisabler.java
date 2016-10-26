@@ -32,6 +32,7 @@ public class AccountDisabler {
     private static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
     private static final Date now = new Date();
     private static TreeMap<Integer,Date> idToCreateDate = new TreeMap<Integer,Date>();
+    private static boolean dryrun = false;
 
     static public void main(String[] argv) throws IOException, SQLException {
         CommandLine command = parseCLI(argv);
@@ -55,9 +56,10 @@ public class AccountDisabler {
             }
         }
 
+        dryrun = command.hasOption('n');
         recalculateCreateDates();
-        disableAccountsActiveBefore(lastActivityThreshold, command.hasOption('n'));
-        disableUnusedAccountsCreatedBefore(createThreshold, command.hasOption('n'));
+        disableAccountsActiveBefore(lastActivityThreshold);
+        disableUnusedAccountsCreatedBefore(createThreshold);
     }
 
     // Reads all accounts with no externally stored creation date, and stores
@@ -187,7 +189,7 @@ public class AccountDisabler {
 
     // Traverses all accounts with activity before the given date and sets them
     // to not be allowed a login
-    private static void disableAccountsActiveBefore(Date dt, boolean dryrun) throws SQLException {
+    private static void disableAccountsActiveBefore(Date dt) throws SQLException {
         if (dt == null) {
             System.err.println("DEBUG - not disabling based on activity date");
             return;
@@ -217,18 +219,7 @@ public class AccountDisabler {
             }
 
             EPerson ep = EPerson.find(ctx, row.getIntColumn("eperson_id"));
-            ep.setCanLogIn(false);
-            try {
-                if (dryrun) {
-                    System.err.println("DEBUG - [DRY RUN] Disabling login for " + ep.getEmail());
-                }
-                else {
-                    System.err.println("DEBUG - Disabling login for " + ep.getEmail());
-                    ep.update();
-                }
-            } catch (SQLException | AuthorizeException e) {
-                System.err.println(e.getMessage());
-            }
+            disableLogin(ep);
         }
 
         ctx.restoreAuthSystemState();
@@ -237,7 +228,7 @@ public class AccountDisabler {
 
     // Reads all external create dates and disables accounts created prior to
     // dt if the account hasn't been used (null lastActivity)
-    private static void disableUnusedAccountsCreatedBefore(Date dt, boolean dryrun) throws SQLException {
+    private static void disableUnusedAccountsCreatedBefore(Date dt) throws SQLException {
         if (dt == null) {
             System.err.println("DEBUG - not disabling based on create date");
             return;
@@ -268,22 +259,30 @@ public class AccountDisabler {
             if (lastActive != null) {
                 continue;
             }
-
-            if (dryrun) {
-                System.err.println("DEBUG - [DRY RUN] Disabling login for " + ep.getEmail());
-            }
-            else {
-                System.err.println("DEBUG - Disabling login for " + ep.getEmail());
-                try {
-                    ep.update();
-                } catch (SQLException | AuthorizeException e) {
-                    System.err.println(e.getMessage());
-                }
-            }
+            disableLogin(ep);
         }
 
         ctx.restoreAuthSystemState();
         ctx.complete();
+    }
+
+    private static void disableLogin(EPerson ep) {
+        if (!ep.canLogIn()) {
+            return;
+        }
+
+        if (dryrun) {
+            System.err.println("DEBUG - [DRY RUN] Disabling login for " + ep.getEmail());
+            return;
+        }
+
+        System.err.println("DEBUG - Disabling login for " + ep.getEmail());
+        try {
+            ep.setCanLogIn(false);
+            ep.update();
+        } catch (SQLException | AuthorizeException e) {
+            System.err.println("ERROR - " + e.getMessage());
+        }
     }
 
     private static CommandLine parseCLI(String argv[]) {
