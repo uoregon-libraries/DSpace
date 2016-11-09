@@ -47,13 +47,18 @@ public class AccountCreateLookup {
      * database that didn't have an entry in the file were created today.
      */
     public static TreeMap<Integer,Date> getCreateDates() throws IOException, SQLException {
+        if (idToCreateDate.size() == 0) {
+            readCreateDates();
+        }
+        return idToCreateDate;
+    }
+
+    private static void readCreateDates() throws IOException, SQLException {
         BufferedReader r = null;
         String filename = TSVFile();
         r = Files.newBufferedReader(Paths.get(filename), StandardCharsets.UTF_8);
         readCreateDatesFromTSV(filename, r);
         readCreateDatesFromDatabase();
-
-        return idToCreateDate;
     }
 
     // Populates the idToCreateDate lookup for all users in the database who
