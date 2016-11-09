@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeMap;
 import org.dspace.core.ConfigurationManager;
@@ -114,5 +115,32 @@ public class AccountCreateLookup {
                 System.exit(1);
             }
         }
+    }
+
+    /**
+     * Gets the person's last activity date or create date, adding a 3 month
+     * buffer to whichever date is used.  Create date can be the only usable
+     * date in cases where the account is being used via the registration
+     * token, which allows account access without requiring a user to actually
+     * log in.  The three-month buffer is necessary because the account's "last
+     * active" date is really just when a user last logged in, and the create
+     * date is just when we discovered an account having been created.  Either
+     * token allows a user access for the lifetime of the server, so we
+     * arbitrarily chose a window that should be long enough to ensure a server
+     * reboot happened or a user was otherwise likely to have needed to log in
+     * from a different browser/ip/computer.
+     */
+    public static Date lastActiveDate(EPerson ep) throws SQLException, IOException {
+        getCreateDates();
+
+        Date dt = ep.getLastActive();
+        if (dt == null) {
+            dt = idToCreateDate.get(ep.getID());
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.add(Calendar.MONTH, 3);
+        return c.getTime();
     }
 }
