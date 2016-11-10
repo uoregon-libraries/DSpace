@@ -133,7 +133,7 @@ public class AccountPurge {
         // column with the table query stuff in dspace!
         Context ctx = new Context();
         idToGroupCount = new HashMap<Integer,Integer>();
-        String sql = "SELECT COUNT(eperson_id), eperson_id FROM epersongroup2eperson GROUP BY eperson_id";
+        String sql = "SELECT COUNT(*) AS group_count, eperson_id FROM epersongroup2eperson GROUP BY eperson_id";
         final TableRowIterator tri = DatabaseManager.queryTable(ctx, "epersongroup2eperson", sql);
 
         ctx.turnOffAuthorisationSystem();
