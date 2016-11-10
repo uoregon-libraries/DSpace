@@ -25,7 +25,7 @@ public class AccountPurge {
     private static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT);
     private static final Date now = new Date();
     private static TreeMap<Integer,Date> idToCreateDate;
-    private static HashMap<Integer,Integer> idToGroupCount;
+    private static HashMap<Integer,Long> idToGroupCount;
     private static boolean dryrun = false;
 
     static public void main(String[] argv) throws IOException, SQLException {
@@ -87,7 +87,7 @@ public class AccountPurge {
 
         // And this takes it a step further to avoid deleting people who are
         // part of any group, as we may want to examine these users manually
-        int groupCount = idToGroupCount.get(ep.getID());
+        long groupCount = idToGroupCount.get(ep.getID());
         if (groupCount > 0) {
             dc.add("epersongroup2eperson");
         }
@@ -132,7 +132,7 @@ public class AccountPurge {
         // TODO: figure out how to do this - there's no way to use a "virtual"
         // column with the table query stuff in dspace!
         Context ctx = new Context();
-        idToGroupCount = new HashMap<Integer,Integer>();
+        idToGroupCount = new HashMap<Integer,Long>();
         String sql = "SELECT COUNT(*) AS group_count, eperson_id FROM epersongroup2eperson GROUP BY eperson_id";
         final TableRowIterator tri = DatabaseManager.queryTable(ctx, "epersongroup2eperson", sql);
 
@@ -142,7 +142,15 @@ public class AccountPurge {
             if (null == row) {
                 break;
             }
-            idToGroupCount.put(row.getIntColumn("eperson_id"), row.getIntColumn("group_count"));
+
+            // use getIntColumn for Oracle count data
+            if (DatabaseManager.isOracle()) {
+                idToGroupCount.put(row.getIntColumn("eperson_id"), new Long(row.getIntColumn("group_count")));
+            }
+            // getLongColumn works for postgres
+            else {
+                idToGroupCount.put(row.getIntColumn("eperson_id"), row.getLongColumn("group_count"));
+            }
         }
 
         ctx.restoreAuthSystemState();
