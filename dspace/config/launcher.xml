@@ -15,10 +15,10 @@
         </step>
     </command>
     <command>
-        <name>account-disabler</name>
-        <description>EPerson tool for removing login privileges for inactive accounts</description>
+        <name>account-purge</name>
+        <description>EPerson tool for removing inactive accounts</description>
         <step>
-            <class>org.dspace.eperson.AccountDisabler</class>
+            <class>org.dspace.eperson.AccountPurge</class>
         </step>
     </command>
     <command>
