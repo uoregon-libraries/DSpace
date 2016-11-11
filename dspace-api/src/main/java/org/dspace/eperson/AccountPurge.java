@@ -87,8 +87,8 @@ public class AccountPurge {
 
         // And this takes it a step further to avoid deleting people who are
         // part of any group, as we may want to examine these users manually
-        long groupCount = idToGroupCount.get(ep.getID());
-        if (groupCount > 0) {
+        Long groupCount = idToGroupCount.get(ep.getID());
+        if (groupCount != null && groupCount > 0) {
             dc.add("epersongroup2eperson");
         }
 
