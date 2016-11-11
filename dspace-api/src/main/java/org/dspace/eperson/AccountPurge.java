@@ -129,12 +129,10 @@ public class AccountPurge {
             return;
         }
 
-        // TODO: figure out how to do this - there's no way to use a "virtual"
-        // column with the table query stuff in dspace!
         Context ctx = new Context();
         idToGroupCount = new HashMap<Integer,Long>();
         String sql = "SELECT COUNT(*) AS group_count, eperson_id FROM epersongroup2eperson GROUP BY eperson_id";
-        final TableRowIterator tri = DatabaseManager.queryTable(ctx, "epersongroup2eperson", sql);
+        final TableRowIterator tri = DatabaseManager.query(ctx, sql);
 
         ctx.turnOffAuthorisationSystem();
         while (tri.hasNext()) {
