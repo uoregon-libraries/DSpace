@@ -134,14 +134,21 @@ public class AccountCreateLookup {
         getCreateDates();
 
         Date dt = ep.getLastActive();
+
+        // Never manually logged in; try to pull create date
         if (dt == null) {
             dt = idToCreateDate.get(ep.getID());
         }
 
+        // Not in the lookup - probably created very recently and the map
+        // hasn't yet been updated.  Just set to today.
         if (dt == null) {
             dt = new Date();
         }
 
+        // Add 3 months since create date and last activity date both reflect a
+        // "beginning" date for a login token, which can then be used for the
+        // lifetime of the server.
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
         c.add(Calendar.MONTH, 3);
