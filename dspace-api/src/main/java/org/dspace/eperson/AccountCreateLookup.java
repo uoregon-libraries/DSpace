@@ -138,6 +138,10 @@ public class AccountCreateLookup {
             dt = idToCreateDate.get(ep.getID());
         }
 
+        if (dt == null) {
+            dt = new Date();
+        }
+
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
         c.add(Calendar.MONTH, 3);
