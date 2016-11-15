@@ -24,7 +24,6 @@ public class OrphanedWorkflowAuditor {
     // Context is needed in too many places to not globalize it
     private static Context context = null;
     private static boolean verbose = false;
-    private static boolean skipInactive = false;
 
     /**
      * Command-line service to scan every collection, verifying we don't have
@@ -41,7 +40,6 @@ public class OrphanedWorkflowAuditor {
         Options options = new Options();
         options.addOption("h", "help", false, "help");
         options.addOption("v", "verbose", false, "Show extra information");
-        options.addOption("s", "skip-inactive", false, "Don't count users who haven't logged in for 3+ months");
 
         CommandLine line = null;
         try {
@@ -59,7 +57,6 @@ public class OrphanedWorkflowAuditor {
         }
 
         verbose = line.hasOption('v');
-        skipInactive = line.hasOption('s');
     }
 
     private static void getContext() {
@@ -102,15 +99,6 @@ public class OrphanedWorkflowAuditor {
             return;
         }
 
-        // Figure out X months ago for activity testing - hopefully we find out
-        // they're inactive via canLogIn, but this might be helpful for people
-        // who slip through the cracks.
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.MONTH, -3);
-        Date lastActive = null;
-        Date activityThreshold = c.getTime();
-
         EPerson[] people = null;
         try {
             people = Group.allMembers(context, g);
@@ -121,20 +109,10 @@ public class OrphanedWorkflowAuditor {
         }
 
         int activePeople = 0;
-        int nullActivity = 0;
 
         for (EPerson p : people) {
             if (!p.canLogIn()) {
                 continue;
-            }
-
-            lastActive = p.getLastActive();
-            if (skipInactive && lastActive != null && lastActive.before(activityThreshold)) {
-                continue;
-            }
-
-            if (lastActive == null) {
-                nullActivity++;
             }
 
             activePeople++;
@@ -146,12 +124,7 @@ public class OrphanedWorkflowAuditor {
             System.out.printf("WARN - %s: no active %s!\n", prefix, name);
         }
         else if (verbose) {
-            if (activePeople == nullActivity) {
-                System.out.printf("INFO - %s: no %s have ever logged in\n", prefix, name);
-            }
-            else {
-                System.out.printf("INFO - %s: %d active %s\n", prefix, activePeople, name);
-            }
+            System.out.printf("INFO - %s: %d active %s\n", prefix, activePeople, name);
         }
     }
 
