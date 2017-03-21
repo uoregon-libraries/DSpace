@@ -424,7 +424,7 @@
         <xsl:text>
             if (!window.DSpace.i18n) {
                 window.DSpace.i18n = {};
-            } 
+            }
             if (!window.DSpace.i18n.discovery) {
                 window.DSpace.i18n.discovery = {};
             }
@@ -552,13 +552,13 @@
     </xsl:template>
 
     <xsl:template match="dri:div[@rend='controls-gear-wrapper' and @n='search-controls-gear']">
-        <div class="btn-group sort-options-menu pull-right">
+        <!--div class="btn-group sort-options-menu pull-right">
             <xsl:call-template name="standardAttributes">
                 <xsl:with-param name="class">btn-group discovery-sort-options-menu pull-right</xsl:with-param>
             </xsl:call-template>
             <xsl:call-template name="renderGearButton"/>
             <xsl:apply-templates/>
-        </div>
+        </div-->
     </xsl:template>
 
     <xsl:template match="dri:list[@rend='gear-selection' and @n='sort-options']">

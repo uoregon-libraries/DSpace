@@ -47,7 +47,7 @@
       <xsl:param name="authorityInput" select="concat(@n,'_authority')"/>
       <!-- optional param for confidence indicator ID -->
       <xsl:param name="confIndicator" select="''"/>
-      <input type="button" name="{concat('lookup_',@n)}" class="pull-right ds-button-field btn btn-default ds-add-button" >
+      <input type="button" name="{concat('lookup_',@n)}" class="pull-right ds-button-field btn btn-rounded btn-flat-primary ds-add-button" >
         <xsl:attribute name="value">
           <xsl:text>Lookup</xsl:text>
         </xsl:attribute>
@@ -93,7 +93,7 @@
 
     <xsl:template name="addLookupButtonAuthor">
         <xsl:param name="isName" select="'missing value'"/>
-        <button type="button" name="{concat('lookup_',@n)}" class="ds-button-field ds-add-button btn btn-default ">
+        <button type="button" name="{concat('lookup_',@n)}" class="ds-button-field ds-add-button btn btn-rounded btn-flat-primary ">
             <xsl:attribute name="onClick">
                 <xsl:text>javascript:AuthorLookup('</xsl:text>
                 <!-- URL -->
@@ -513,7 +513,7 @@
                 <xsl:apply-templates select="*"/>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><i18n:text>xmlui.ChoiceLookupTransformer.cancel</i18n:text></button>
+                <button type="button" class="btn btn-rounded btn-flat-primary" data-dismiss="modal"><i18n:text>xmlui.ChoiceLookupTransformer.cancel</i18n:text></button>
             </div>
         </div>
     </div>

@@ -88,6 +88,7 @@
         </div>
     </xsl:template>
 
+    <xsl:template name="disable_front-page-search" match="dri:div[@id='aspect.discovery.SiteViewer.div.front-page-search']"></xsl:template>
 
     <!-- Next come the three structural elements that divs that contain: table, p, and list. These are
         responsible for display of static content, forms, and option lists. The fourth element under

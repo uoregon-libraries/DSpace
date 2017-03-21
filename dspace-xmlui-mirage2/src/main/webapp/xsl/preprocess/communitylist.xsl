@@ -48,7 +48,7 @@
         </xsl:variable>
         <div>
             <xsl:attribute name="rend">
-                <xsl:text>row community-browser-row</xsl:text>
+                <xsl:text>row community-browser-row killnumber</xsl:text>
                 <xsl:if test="ancestor::dri:referenceSet[1][@id='aspect.artifactbrowser.CommunityBrowser.referenceSet.community-browser'] and position() mod 2 = 0">
                     <xsl:text> odd-community-browser-row</xsl:text>
                 </xsl:if>
@@ -58,6 +58,7 @@
                 <xsl:value-of select="@url"/>
                 <xsl:text>?sections=dmdSec</xsl:text>
             </xsl:variable>
+
             <xsl:variable name="depth" select="count(ancestor::dri:referenceSet)"/>
             <xsl:variable name="nephews" select="count(following-sibling::dri:reference/dri:referenceSet) + count(preceding-sibling::dri:reference/dri:referenceSet)"/>
             <xsl:variable name="second_cousins" select="count(parent::dri:referenceSet/following-sibling::dri:referenceSet/dri:reference/dri:referenceSet) + count(parent::dri:referenceSet/preceding-sibling::dri:referenceSet/dri:reference/dri:referenceSet)"/>
@@ -120,6 +121,28 @@
         </xsl:if>
     </xsl:template>
 
+
+<!--
+
+    Find a way to transform these labels before rendering
+    
+    <script type="text/javascript">
+			<![CDATA[
+        jQuery(document).ready(function($){
+
+          jQuery('.community-browser-wrapper > .killnumber a[name="community-browser-link"]').each(function() {
+              var currentElement = $(this).text();
+              currentElement = currentElement.substring(3,currentElement.length);
+              $(this).text(currentElement);
+
+          });
+        });
+			]]>
+		</script>
+
+-->
+
+
     <xsl:template match="mets:METS" mode="community-browser">
         <xsl:variable name="dim" select="mets:dmdSec/mets:mdWrap/mets:xmlData/dim:dim"/>
         <xref target="{@OBJID}" n="community-browser-link">
@@ -144,7 +167,7 @@
 
 
     </xsl:template>
-    
+
     <xsl:template name="get-handle-class-from-url">
         <xsl:param name="url"/>
         <xsl:variable name="handle_pre">

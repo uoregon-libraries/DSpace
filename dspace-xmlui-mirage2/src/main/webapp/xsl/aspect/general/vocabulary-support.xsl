@@ -39,7 +39,7 @@
                         </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><i18n:text>xmlui.ChoiceLookupTransformer.cancel</i18n:text></button>
+                    <button type="button" class="btn btn-rounded btn-flat-primary" data-dismiss="modal"><i18n:text>xmlui.ChoiceLookupTransformer.cancel</i18n:text></button>
                 </div>
             </div>
         </div>

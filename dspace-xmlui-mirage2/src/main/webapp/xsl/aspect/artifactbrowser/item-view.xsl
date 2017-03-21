@@ -109,11 +109,12 @@
             <div class="row">
                 <div class="col-sm-4">
                     <div class="row">
-                        <div class="col-xs-6 col-sm-12">
+                        <!--div class="col-xs-6 col-sm-12">
                             <xsl:call-template name="itemSummaryView-DIM-thumbnail"/>
-                        </div>
-                        <div class="col-xs-6 col-sm-12">
+                        </div-->
+                        <div class="col-xs-12 col-sm-12">
                             <xsl:call-template name="itemSummaryView-DIM-file-section"/>
+                            <!--xsl:call-template name="itemSummaryView-DIM-file-download-section"/-->
                         </div>
                     </div>
                     <xsl:call-template name="itemSummaryView-DIM-date"/>
@@ -123,8 +124,10 @@
                     </xsl:if>
                 </div>
                 <div class="col-sm-8">
+                    <xsl:call-template name="itemSummaryView-DIM-authors"/>
                     <xsl:call-template name="itemSummaryView-DIM-abstract"/>
                     <xsl:call-template name="itemSummaryView-DIM-URI"/>
+                    <xsl:call-template name="itemSummaryView-DIM-DOI"/>
                     <xsl:call-template name="itemSummaryView-collections"/>
                 </div>
             </div>
@@ -267,18 +270,104 @@
         <xsl:if test="dim:field[@element='identifier' and @qualifier='uri' and descendant::text()]">
             <div class="simple-item-view-uri item-page-field-wrapper table">
                 <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-uri</i18n:text></h5>
+
                 <span>
                     <xsl:for-each select="dim:field[@element='identifier' and @qualifier='uri']">
+
+                      <xsl:variable name="myuri">
+                        <xsl:copy-of select="./node()"/>
+                      </xsl:variable>
+
+                      <xsl:choose>
+                        <xsl:when test="starts-with($myuri, 'http://lib-vm-rdmi')">
+                          <a>
+                              <xsl:attribute name="href">
+                                  <xsl:value-of select="$myuri" />
+                              </xsl:attribute>
+                              <button class="btn btn-rounded btn-flat-primary">Download Data <span aria-hidden="true" class="glyphicon glyphicon-download"></span></button>
+                          </a>
+                          <br />
+                        </xsl:when>
+                        <xsl:otherwise>
+                          <xsl:element name="input">
+                            <xsl:attribute name="id">urivalue<xsl:value-of select = "position()" /></xsl:attribute>
+                            <xsl:attribute name="value">
+                              <!--xsl:copy-of select="./node()"/-->
+                              <xsl:value-of select="$myuri" />
+                            </xsl:attribute>
+                          </xsl:element>
+
+                          <xsl:element name="button">
+                            <xsl:attribute name="class">btn btn-rounded btn-flat-primary</xsl:attribute>
+                            <xsl:attribute name="data-clipboard-target">#urivalue<xsl:value-of select = "position()" /></xsl:attribute>
+                            Copy URI <img src="{concat($theme-path,'images/clippy.svg')}" width="13" alt="Copy to clipboard" />
+                          </xsl:element><br />
+                        </xsl:otherwise>
+                      </xsl:choose>
+
+                        <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
+                            <br/>
+                        </xsl:if>
+                    </xsl:for-each>
+                    <br />
+                </span>
+            </div>
+        </xsl:if>
+    </xsl:template>
+
+    <xsl:template name="itemSummaryView-DIM-DOI">
+        <xsl:if test="dim:field[@element='identifier' and @qualifier='doi' and descendant::text()]">
+            <div class="simple-item-view-uri item-page-field-wrapper table">
+                <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-doi</i18n:text></h5>
+
+                <!--label for="doi"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-doi</i18n:text></label><br />
+                <input type="text" id="doi" value="http://www.sitepoint.com/" />
+                <button data-copytarget="#website">copy</button-->
+
+                <span>
+
+                  <xsl:for-each select="dim:field[@element='identifier' and @qualifier='doi']">
+
+                    <!-- Target -->
+                    <!--input id="foo" value="https://github.com/zenorocha/clipboard.js.git" /-->
+                    <!--input id="foo" value="{//return/./node()}" /-->
+
+                    <xsl:element name="input">
+                      <xsl:attribute name="id">doivalue</xsl:attribute>
+                      <xsl:attribute name="value">
+                        <xsl:copy-of select="./node()"/>
+                      </xsl:attribute>
+                    </xsl:element>
+
+
+                    <!-- Trigger -->
+                    <button class="btn btn-rounded btn-flat-primary" data-clipboard-target="#doivalue">
+                        Copy DOI <img src="{concat($theme-path,'images/clippy.svg')}" width="13" alt="Copy to clipboard" />
+                    </button><br />
+
+                      <!--a>
+                          <xsl:attribute name="href">
+                              <xsl:copy-of select="./node()"/>
+                          </xsl:attribute>
+                          <xsl:copy-of select="./node()"/>
+                      </a-->
+                      <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='doi']) != 0">
+                          <br/>
+                      </xsl:if>
+                  </xsl:for-each>
+
+
+                    <!--xsl:for-each select="dim:field[@element='identifier' and @qualifier='doi']">
                         <a>
                             <xsl:attribute name="href">
                                 <xsl:copy-of select="./node()"/>
                             </xsl:attribute>
                             <xsl:copy-of select="./node()"/>
                         </a>
-                        <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
+                        <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='doi']) != 0">
                             <br/>
                         </xsl:if>
-                    </xsl:for-each>
+                    </xsl:for-each-->
                 </span>
             </div>
         </xsl:if>
@@ -363,7 +452,26 @@
                             <xsl:with-param name="label" select="mets:FLocat[@LOCTYPE='URL']/@xlink:label" />
                             <xsl:with-param name="size" select="@SIZE" />
                         </xsl:call-template>
+
+                        <!--xsl:template name="itemSummaryView-DIM-file-download-section"-->
+
+                        <a>
+                            <xsl:attribute name="href">
+                                <xsl:value-of select="mets:FLocat[@LOCTYPE='URL']/@xlink:href" />
+                            </xsl:attribute>
+                            <xsl:attribute name="download">
+                                <xsl:value-of select="mets:FLocat[@LOCTYPE='URL']/@xlink:title" />
+                            </xsl:attribute>
+                            <button class="btn btn-rounded btn-flat-primary">Download <span aria-hidden="true" class="glyphicon glyphicon-download"></span></button>
+                        </a>
+                          <!--xsl:with-param name="href" select="mets:FLocat[@LOCTYPE='URL']/@xlink:href" />
+
+                          <a href="link/to/your/download/file" download="filename"><button class="btn btn-rounded btn-flat-primary">Download <span aria-hidden="true" class="glyphicon glyphicon-download"></span></button></a-->
+                          <br />
+                        <!--/xsl:template-->
+
                     </xsl:for-each>
+
                 </div>
             </xsl:when>
             <!-- Special case for handling ORE resource maps stored as DSpace bitstreams -->
@@ -372,6 +480,9 @@
             </xsl:when>
         </xsl:choose>
     </xsl:template>
+
+
+
 
     <xsl:template name="itemSummaryView-DIM-file-section-entry">
         <xsl:param name="href" />

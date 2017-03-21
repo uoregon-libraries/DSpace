@@ -45,10 +45,10 @@
     <xsl:template match="dri:options">
         <div id="ds-options" class="word-break hidden-print">
             <xsl:if test="not(contains(/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='request'][@qualifier='URI'], 'discover'))">
-                <div id="ds-search-option" class="ds-option-set">
+                <!--div id="ds-search-option" class="ds-option-set"-->
                     <!-- The form, complete with a text box and a button, all built from attributes referenced
                  from under pageMeta. -->
-                    <form id="ds-search-form" class="" method="post">
+                    <!--form id="ds-search-form" class="" method="post">
                         <xsl:attribute name="action">
                             <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath']"/>
                             <xsl:value-of
@@ -120,11 +120,25 @@
                             </xsl:if>
                         </fieldset>
                     </form>
-                </div>
+                </div-->
             </xsl:if>
-            <xsl:apply-templates/>
+            <!--xsl:apply-templates/-->
+
+            <!--xsl:apply-templates select="dri:list[@n='discovery']"/-->
+            <xsl:apply-templates select="dri:list[@n='context']"/>
+            <xsl:apply-templates select="dri:list[@n='account']"/>
+
+						<xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='title']='xmlui.general.dspace_home'">
+							<a href="https://lib-scholardev.uoregon.edu/xmlui/page/submit"><button title="Submit Work" class="submit-work ds-button-field btn btn-rounded btn-flat-primary">Submit Work <span aria-hidden="true" class="glyphicon glyphicon-upload"></span></button></a>
+							<br /><br />
+						</xsl:if>
+
+            <xsl:apply-templates select="dri:list[@n='administrative']"/>
+            <xsl:apply-templates select="dri:list[@n='browse']"/>
+						<xsl:apply-templates select="dri:list[@n='statistics']"/>
+
             <!-- DS-984 Add RSS Links to Options Box -->
-            <xsl:if test="count(/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']) != 0">
+            <!--xsl:if test="count(/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']) != 0">
                 <div>
                     <h2 class="ds-option-set-head h6">
                         <i18n:text>xmlui.feed.header</i18n:text>
@@ -133,15 +147,14 @@
                         <xsl:call-template name="addRSSLinks"/>
                     </div>
                 </div>
-
-            </xsl:if>
+            </xsl:if-->
         </div>
     </xsl:template>
 
     <!-- Add each RSS feed from meta to a list -->
     <xsl:template name="addRSSLinks">
         <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']">
-            <a class="list-group-item">
+            <a> <!--class="list-group-item"-->
                 <xsl:attribute name="href">
                     <xsl:value-of select="."/>
                 </xsl:attribute>

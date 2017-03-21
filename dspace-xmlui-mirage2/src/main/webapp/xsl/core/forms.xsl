@@ -764,7 +764,7 @@
                         <xsl:value-of select="@returnValue"/>
                     </xsl:attribute>
                     <xsl:if test="../dri:value[@type='option'][@option = current()/@returnValue]">
-                        <xsl:attribute name="checked">checked</xsl:attribute>
+                        <xsl:attribute name="checked"></xsl:attribute>
                     </xsl:if>
                     <xsl:if test="../@disabled='yes'">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
@@ -816,7 +816,7 @@
                     <div class="clearfix">
                         <xsl:if test="contains(dri:params/@operations,'add')">
                         <button type="submit" name="{concat('submit_',@n,'_add')}"
-                                class="ds-button-field btn btn-default pull-right ds-add-button">
+                                class="ds-button-field btn btn-rounded btn-flat-primary btn-small pull-right ds-add-button">
                             <xsl:if test="dri:params/@choicesPresentation = 'lookup'">
                                 <xsl:attribute name="style">
                                     <xsl:text>display:none;</xsl:text>
@@ -875,7 +875,7 @@
                     </xsl:call-template>
                     <xsl:if test="contains(dri:params/@operations,'delete') and (dri:instance or dri:field/dri:instance)">
                         <!-- Delete buttons should be named "submit_[field]_delete" so that we can ignore errors from required fields when simply removing values-->
-                        <button type="submit" name="{concat('submit_',@n,'_delete')}" class="ds-button-field ds-delete-button btn btn-default">
+                        <button type="submit" name="{concat('submit_',@n,'_delete')}" class="ds-button-field ds-delete-button btn btn-rounded btn-flat-primary btn-small">
                             <i18n:text>xmlui.mirage2.forms.instancedCompositeFields.remove</i18n:text>
                         </button>
                     </xsl:if>
@@ -1096,7 +1096,7 @@
 
                     <div class="col-xs-2">
                         <button type="submit" name="{concat('submit_',@n,'_add')}"
-                                class="pull-right ds-button-field btn btn-default ds-add-button">
+                                class="pull-right ds-button-field btn btn-rounded btn-flat-primary btn-small ds-add-button">
                             <!-- Make invisible if we have choice-lookup popup that provides its own Add. -->
                             <xsl:if test="dri:params/@choicesPresentation = 'lookup'">
                                 <xsl:attribute name="style">
@@ -1128,7 +1128,7 @@
                 <xsl:if test="contains(dri:params/@operations,'delete') and dri:instance">
                     <!-- Delete buttons should be named "submit_[field]_delete" so that we can ignore errors from required fields when simply removing values-->
                     <p>
-                    <button type="submit" name="{concat('submit_',@n,'_delete')}" class="ds-button-field btn btn-default ds-delete-button">
+                    <button type="submit" name="{concat('submit_',@n,'_delete')}" class="ds-button-field btn btn-rounded btn-flat-primary btn-small ds-delete-button">
                         <i18n:text>xmlui.mirage2.forms.nonCompositeFieldSet.remove</i18n:text>
                     </button>
                     </p>
@@ -1316,7 +1316,7 @@
                 <xsl:text>ds-</xsl:text><xsl:value-of select="@type"/><xsl:text>-field </xsl:text>
             <xsl:choose>
                 <xsl:when test="@type='button'">
-                    <xsl:text>btn</xsl:text>
+                    <xsl:text>btn btn-rounded btn-flat-primary btn-small</xsl:text>
                     <xsl:if test="not(contains(@rend, 'btn-'))">
                         <xsl:text> btn-default</xsl:text>
                     </xsl:if>

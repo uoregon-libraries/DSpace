@@ -38,7 +38,7 @@
     <xsl:import href="core/utils.xsl"/>
     <xsl:import href="aspect/general/choice-authority-control.xsl"/>
     <xsl:import href="aspect/general/vocabulary-support.xsl"/>
-    <!--<xsl:import href="xsl/aspect/administrative/administrative.xsl"/>-->
+    <!--xsl:import href="xsl/aspect/administrative/administrative.xsl"/-->
     <xsl:import href="aspect/artifactbrowser/common.xsl"/>
     <xsl:import href="aspect/artifactbrowser/item-list.xsl"/>
     <xsl:import href="aspect/artifactbrowser/item-view.xsl"/>
@@ -49,6 +49,5 @@
     <xsl:import href="aspect/artifactbrowser/one-offs.xsl"/>
     <xsl:import href="aspect/submission/submission.xsl"/>
     <xsl:output indent="yes"/>
-
 
 </xsl:stylesheet>

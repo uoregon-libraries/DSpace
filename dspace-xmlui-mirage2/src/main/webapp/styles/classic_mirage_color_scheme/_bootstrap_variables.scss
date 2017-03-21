@@ -7,7 +7,22 @@
  */
 // Preset Bootstrap variables
 // ----------------------
-$brand-primary: #607890 !default;
+
+
+
+
+
+
+$brand-primary: #00714b !default;
 
 $navbar-inverse-bg: #1F3F5E !default;
 $navbar-inverse-link-color: #eee !default;
+
+$font-size-base:          14px;
+$font-size-large:         15px;
+$font-size-small:         12px;
+
+$font-family-base:       'Lato', Helvetica, Arial, sans-serif;
+$font-family-serif:      Verdana, 'Trebuchet MS', serif;
+$font-family-sans-serif: 'Lato', Helvetica, Arial, sans-serif;
+$font-family-monospace:  'Andale Mono', 'Courier New', monospace;

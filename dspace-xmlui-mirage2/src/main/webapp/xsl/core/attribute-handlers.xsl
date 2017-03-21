@@ -408,7 +408,7 @@
     </xsl:template>
 
     <xsl:template name="renderSortOptionsMenu">
-        <div class="btn-group sort-options-menu pull-right">
+        <!--div class="btn-group sort-options-menu pull-right">
             <xsl:call-template name="renderGearButton"/>
             <ul class="dropdown-menu pull-right" role="menu">
                 <xsl:for-each
@@ -453,11 +453,11 @@
                     </xsl:for-each>
                 </xsl:for-each>
             </ul>
-        </div>
+        </div-->
     </xsl:template>
 
     <xsl:template name="renderGearButton">
-        <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <button class="btn btn-rounded btn-flat-primary dropdown-toggle" data-toggle="dropdown">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"/>
         </button>
     </xsl:template>

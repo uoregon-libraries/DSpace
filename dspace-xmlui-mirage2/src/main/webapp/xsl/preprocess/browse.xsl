@@ -143,7 +143,7 @@
             <xsl:call-template name="copy-attributes"/>
             <xsl:attribute name="rend">
                 <xsl:value-of select="dri:xref/@rend"/>
-                <xsl:text> btn btn-default </xsl:text>
+                <xsl:text> btn btn-rounded btn-flat-primary</xsl:text>
             </xsl:attribute>
             <xsl:attribute name="target">
                 <xsl:value-of select="dri:xref/@target"/>
