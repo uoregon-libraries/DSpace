@@ -1293,9 +1293,15 @@
       </style>
 
       <div class="frontlogo">
-        <a href="https://lib-scholardev.uoregon.edu/xmlui/">
-          <img src="{$theme-path}/images/frontlogo.svg" />
+        <a>
+            <xsl:attribute name="href">
+                <xsl:value-of
+                        select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
+                <xsl:text>/</xsl:text>
+            </xsl:attribute>
+            <img src="{$theme-path}/images/frontlogo.svg" />
         </a>
+
       </div>
 
       </xsl:if>

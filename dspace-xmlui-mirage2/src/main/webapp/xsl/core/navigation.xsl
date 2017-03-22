@@ -129,7 +129,14 @@
             <xsl:apply-templates select="dri:list[@n='account']"/>
 
 						<xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='title']='xmlui.general.dspace_home'">
-							<a href="https://lib-scholardev.uoregon.edu/xmlui/page/submit"><button title="Submit Work" class="submit-work ds-button-field btn btn-rounded btn-flat-primary">Submit Work <span aria-hidden="true" class="glyphicon glyphicon-upload"></span></button></a>
+								<a>
+				        	<xsl:attribute name="href">
+		                <xsl:value-of
+		                        select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
+		                <xsl:text>/page/submit</xsl:text>
+				          </xsl:attribute>
+								<button title="Submit Work" class="submit-work ds-button-field btn btn-rounded btn-flat-primary">Submit Work <span aria-hidden="true" class="glyphicon glyphicon-upload"></span></button>
+							</a>
 							<br /><br />
 						</xsl:if>
 
