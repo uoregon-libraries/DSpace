@@ -71,16 +71,16 @@ copy_theme_files() {
 }
 
 run_maven() {
-  local cmd="mvn package -Dmirage2.on=true -Dmirage2.deps.included=false"
-  local log="/var/log/dspace-build-mvn-$(date +"%s")"
+  local cmd="mvn package -X -Dmirage2.on=true"
+  local log="/var/log/dspace-build-mvn-$(date +"%Y%m%d-%H%M%S")"
 
   echo "Running $cmd - logging output to $log"
-  su -l dspace -c "cd $dest && source /etc/profile.d/rvm.sh && $cmd" > $log
+  su -l dspace -c "cd $dest && $cmd" > $log
 }
 
 run_ant() {
   local cmd="ant update"
-  local log="/var/log/dspace-build-ant-$(date +"%s")"
+  local log="/var/log/dspace-build-ant-$(date +"%Y%m%d-%H%M%S")"
 
   echo "Running $cmd - logging output to $log"
   su -l dspace -c "cd $dest/dspace/target/dspace-installer && $cmd" > $log
