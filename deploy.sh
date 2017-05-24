@@ -34,6 +34,8 @@ if [ "$EUID" != "0" ]; then
   exit 1
 fi
 
+rm ./target/ -rf
+
 propfile=./production.properties
 if [ ! -e $propfile ]; then
   echo "ERROR: Missing production.properties"
