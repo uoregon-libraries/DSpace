@@ -90,6 +90,7 @@ build() {
   target_env=$1
   verify_root
   get_dspace_source "${2:-}"
+  rm ./target/ -rf
   copy_properties_file
   get_dir_args
 
