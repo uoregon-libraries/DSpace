@@ -34,7 +34,7 @@ if [ "$EUID" != "0" ]; then
   exit 1
 fi
 
-rm ./target/ -rf
+for dir in $(find $(pwd) -type d -name "target"); do rm -rf $dir; done
 
 propfile=./production.properties
 if [ ! -e $propfile ]; then

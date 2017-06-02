@@ -90,7 +90,7 @@ build() {
   target_env=$1
   verify_root
   get_dspace_source "${2:-}"
-  rm ./target/ -rf
+  for dir in $(find $(pwd) -type d -name "target"); do rm -rf $dir; done
   copy_properties_file
   get_dir_args
 
