@@ -66,7 +66,7 @@ public class EmbargoChecker {
      * - All items with a dc.description.embargo value have non-public objects protected
      * - All protected objects are only protected for 2 years max or
      *   "grandfathered" permanent embargoes (protected forever, but ingested
-     *   prior to 2017) (TODO)
+     *   when we had more loose requirements)
      *
      * Some terms and definitions that are probably confusing:
      *
