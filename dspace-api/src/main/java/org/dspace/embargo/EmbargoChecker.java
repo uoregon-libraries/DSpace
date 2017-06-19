@@ -146,6 +146,15 @@ public class EmbargoChecker {
                         reportNotProtected(bs);
                     }
                 }
+            } else {
+                // Is the item expected *not* to be embargoed?  Make sure
+                // everything is public!
+                for (Bitstream bs : bn.getBitstreams()) {
+                    if (!isPublic(bs)) {
+                        isValid = false;
+                        reportUnexpectedEmbargo(bs);
+                    }
+                }
             }
 
             // Bundle and bitstreams should be publicly available eventually
@@ -393,6 +402,11 @@ public class EmbargoChecker {
 
     private void reportPublicAccessDateInvalid(DSpaceObject o) throws SQLException {
         warnings.add(String.format("%s (%s) has public access too far beyond today",
+            o.getName(), o.getTypeText()));
+    }
+
+    private void reportUnexpectedEmbargo(DSpaceObject o) throws SQLException {
+        errors.add(String.format("%s (%s) isn't set to be embargoed, but isn't available to the public",
             o.getName(), o.getTypeText()));
     }
 
