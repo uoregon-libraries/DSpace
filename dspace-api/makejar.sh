@@ -41,7 +41,7 @@ verify_dspacedir() {
 }
 
 dspacedir=${1:-}
-jarfile="$dspacedir/lib/dspace-api-5.4.jar"
+jarfile="$dspacedir/lib/dspace-api-5.6.jar"
 cwd=$PWD
 
 # Try to get the original user so this script can be run by anybody with sudo
@@ -53,4 +53,4 @@ verify_root
 verify_dspacedir
 
 su -l $user -c "cd $cwd && mvn compile"
-su -l dspace -c "cd $cwd/target/classes && jar uf $dspacedir/lib/dspace-api-5.4.jar org/"
+su -l dspace -c "cd $cwd/target/classes && jar uf $dspacedir/lib/dspace-api-5.6.jar org/"
