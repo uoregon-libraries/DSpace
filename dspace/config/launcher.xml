@@ -204,6 +204,13 @@
         </step>
     </command>
     <command>
+        <name>item-embargo-tsv</name>
+        <description>Prints out a TSV representation of some basic item and embargo data</description>
+        <step>
+            <class>org.dspace.embargo.ListEmbargoItemTSV</class>
+        </step>
+    </command>
+    <command>
         <name>make-handle-config</name>
         <description>Run the handle server simple setup command</description>
         <step>

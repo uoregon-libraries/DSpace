@@ -182,6 +182,37 @@ public class EmbargoChecker {
     }
 
     /**
+     * Find out if any bundle, bitstream, or even the item itself is protected
+     */
+    public boolean isProtected() throws SQLException, AuthorizeException, IOException {
+        // Items should always be public, but for the purposes of this check, a
+        // non-public item, broken though that may be, means its bitstreams
+        // should expect to be protected
+        if (!isPublic(item)) {
+            return true;
+        }
+
+        for (Bundle bn : item.getBundles()) {
+            if (!isPublic(bn)) {
+                return true;
+            }
+            for (Bitstream bs : bn.getBitstreams()) {
+                if (!isPublic(bs)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    /**
+     * Get the embargo date calculated from the dc.description.embargo field
+     */
+    public Date getEmbargoDate() {
+        return embargoDate;
+    }
+
+    /**
      * Check a name against bundle names which are meant to be 100% public.
      * Public bundles are those which we expect to be unprotected, and which we
      * expect bitstreams inside to also be unprotected.  For us, this means
