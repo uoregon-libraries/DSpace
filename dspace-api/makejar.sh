@@ -54,3 +54,4 @@ verify_dspacedir
 
 su -l $user -c "cd $cwd && mvn compile"
 su -l dspace -c "cd $cwd/target/classes && jar uf $dspacedir/lib/dspace-api-5.6.jar org/"
+su -l dspace -c "cp $cwd/../dspace/config/launcher.xml /usr/local/dspace/config/launcher.xml"
