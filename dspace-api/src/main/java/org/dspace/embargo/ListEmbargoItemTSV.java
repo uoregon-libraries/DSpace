@@ -1,6 +1,7 @@
 package org.dspace.embargo;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Locale;
@@ -61,10 +62,14 @@ public class ListEmbargoItemTSV {
 
                 StringBuilder sb = new StringBuilder();
                 Formatter formatter = new Formatter(sb, Locale.US);
+                String dtString = "N/A";
+                if (dt != null) {
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    dtString = df.format(dt);
+                }
 
                 formatter.format("%s\t%s\t%s\t%s",
-                    i.getHandle(), i.getOwningCollection().getHandle(),
-                    dt == null ? "N/A" : dt, ec.isProtected() ? "T" : "F");
+                    i.getHandle(), i.getOwningCollection().getHandle(), dtString, ec.isProtected() ? "T" : "F");
 
                 System.out.println(sb.toString());
             }
