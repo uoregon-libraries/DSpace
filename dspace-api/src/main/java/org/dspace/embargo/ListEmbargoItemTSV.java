@@ -9,6 +9,7 @@ import java.util.Locale;
 import org.dspace.content.Item;
 import org.dspace.content.Collection;
 import org.dspace.content.ItemIterator;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
 
 /**
@@ -17,9 +18,11 @@ import org.dspace.core.Context;
 public class ListEmbargoItemTSV {
     // Context is needed in too many places to not globalize it
     private static Context context = null;
+    private static String baseURL;
 
     public static void main(String argv[]) throws Exception {
         EmbargoChecker.initTerms();
+        getConfig();
 
         try {
             context = new Context();
@@ -53,12 +56,11 @@ public class ListEmbargoItemTSV {
         }
 
         try {
-            System.out.println("handle\tcollection handle\tembargo metadata date\tis protected");
+            System.out.println("url\thandle\tcollection url\tcollection handle\tembargo metadata date\tis protected");
             while (ii.hasNext()) {
                 Item i = ii.next();
                 EmbargoChecker ec = new EmbargoChecker(context, i);
                 Date dt = ec.getEmbargoDate();
-                Collection col = i.getOwningCollection();
 
                 StringBuilder sb = new StringBuilder();
                 Formatter formatter = new Formatter(sb, Locale.US);
@@ -68,8 +70,13 @@ public class ListEmbargoItemTSV {
                     dtString = df.format(dt);
                 }
 
-                formatter.format("%s\t%s\t%s\t%s",
-                    i.getHandle(), i.getOwningCollection().getHandle(), dtString, ec.isProtected() ? "T" : "F");
+                String iHDL = i.getHandle();
+                String cHDL = i.getOwningCollection().getHandle();
+                String iURL = baseURL + "/handle/" + iHDL;
+                String cURL = baseURL + "/handle/" + cHDL;
+
+                formatter.format("%s\t%s\t%s\t%s\t%s\t%s", iURL, iHDL, cURL, cHDL,
+                    dtString, ec.isProtected() ? "T" : "F");
 
                 System.out.println(sb.toString());
             }
@@ -77,6 +84,15 @@ public class ListEmbargoItemTSV {
         catch (Exception e) {
             System.err.println("ERROR trying to get next DSpace item: " + e);
             throw e;
+        }
+    }
+
+    // Get configuration for URL generation
+    public static void getConfig() throws IllegalStateException {
+        String prop = "dspace.url";
+        baseURL = ConfigurationManager.getProperty(prop);
+        if (baseURL == null) {
+            throw new IllegalStateException("Missing required configuration property '" + prop + "'.");
         }
     }
 }
