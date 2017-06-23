@@ -85,9 +85,12 @@ public class ReconcileEmbargoRights {
                     df.setTimeZone(TimeZone.getTimeZone("UTC"));
                     String dtString = df.format(publicAccessDate);
 
+                    i.clearMetadata(ec.termsSchema, ec.termsElement, ec.termsQualifier, Item.ANY);
+                    i.addMetadata(ec.termsSchema, ec.termsElement, ec.termsQualifier, "", dtString);
                     try {
+                        i.update();
                         System.out.printf("Item %s had null metadata embargo; " +
-                            "it should be updated to %s to match the public " +
+                            "it has been updated to %s to match the public " +
                             "access date\n", i.getHandle(), dtString);
                     }
                     catch (Exception e) {
