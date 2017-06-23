@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.dspace.content.Item;
 import org.dspace.content.Collection;
@@ -14,9 +15,7 @@ import org.dspace.core.Context;
 
 /**
  * Command-line service to identify and fix items where the
- * dc.description.embargo field doesn't match the actual access restrictions.
- * Must be run interactively to verify remediation (updating the embarge
- * metadata) before applying it.
+ * dc.description.embargo field doesn't match the actual access restrictions
  */
 public class ReconcileEmbargoRights {
    // Context is needed in too many places to not globalize it
@@ -80,8 +79,26 @@ public class ReconcileEmbargoRights {
             }
 
             if (!ec.datesClose(metadataEmbargoDate, publicAccessDate)) {
-                System.out.printf("Item %s has metadata embargo of %s but public access of %s\n",
-                    i.getHandle(), metadataEmbargoDate, publicAccessDate);
+                // If the metadata field is empty, we just update it
+                if (metadataEmbargoDate == null) {
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    String dtString = df.format(publicAccessDate);
+
+                    try {
+                        System.out.printf("Item %s had null metadata embargo; " +
+                            "it should be updated to %s to match the public " +
+                            "access date\n", i.getHandle(), dtString);
+                    }
+                    catch (Exception e) {
+                        System.err.printf("ERROR: Item %s won't update: %s\n", i.getHandle(), e);
+                        continue;
+                    }
+                }
+                else {
+                    System.out.printf("WARN: Item %s has metadata embargo of %s but public access of %s\n",
+                        i.getHandle(), metadataEmbargoDate, publicAccessDate);
+                }
             }
         }
     }

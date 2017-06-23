@@ -31,10 +31,10 @@ import org.dspace.license.CreativeCommons;
 public class EmbargoChecker {
     // Metadata field components for user-supplied embargo terms
     // set from the DSpace configuration by initTerms()
-    private static String termsSchema = null;
-    private static String termsElement = null;
-    private static String termsQualifier = null;
-    private static String termsOpen = null;
+    public static String termsSchema = null;
+    public static String termsElement = null;
+    public static String termsQualifier = null;
+    public static String termsOpen = null;
 
     private Item item;
     private Context context;
@@ -566,15 +566,14 @@ public class EmbargoChecker {
     }
 
     // Return the parsed date in the embargo metadata field, or null if there's
-    // no date or the date is before today
+    // no value for the field
     private Date metadataEmbargoDate() {
         Metadatum terms[] = item.getMetadata(termsSchema, termsElement, termsQualifier, Item.ANY);
         if (terms == null || terms.length == 0) {
             return null;
         }
         String md = terms[0].value;
-        if (md.equals(termsOpen))
-        {
+        if (md.equals(termsOpen)) {
             return EmbargoManager.FOREVER.toDate();
         }
         return new DCDate(md).toDate();
