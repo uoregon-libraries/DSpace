@@ -267,6 +267,13 @@
         </step>
     </command>
     <command>
+        <name>reconcile-embargo-rights</name>
+        <description>Find and attempt to fix items with a different dc.description.embargo vs. actual public access rights</description>
+        <step>
+            <class>org.dspace.embargo.ReconcileEmbargoRights</class>
+        </step>
+    </command>
+    <command>
         <name>registry-loader</name>
         <description>Load entries into a registry</description>
         <step>

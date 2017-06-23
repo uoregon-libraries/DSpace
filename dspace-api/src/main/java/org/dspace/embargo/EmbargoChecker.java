@@ -213,6 +213,82 @@ public class EmbargoChecker {
     }
 
     /**
+     * Get the date the item will be available for access based on the rights.
+     * Pulls all bitstreams and bundles and returns the date they start being
+     * publicly available, assuming they all have the same start date.  If they
+     * don't, an exception is thrown.
+     */
+    public Date getItemAccessDate() throws Exception {
+        Date publicAccess = getPublicAccessDate(item);
+
+        for (Bundle bn : item.getBundles()) {
+            publicAccessDateMustEqual(bn, publicAccess, "public access date mismatch");
+            if (publicAccess == null) {
+                publicAccess = getPublicAccessDate(bn);
+            }
+
+            for (Bitstream bs : bn.getBitstreams()) {
+                publicAccessDateMustEqual(bs, publicAccess, "public access date mismatch");
+                if (publicAccess == null) {
+                    publicAccess = getPublicAccessDate(bs);
+                }
+            }
+        }
+
+        return publicAccess;
+    }
+
+    /**
+     * Throws an exception if the object's public access date doesn't more or
+     * less match the given date.  If the public access date is null, one of
+     * the objects is already public, so it's not considered a mismatch.
+     */
+    private void publicAccessDateMustEqual(DSpaceObject o, Date dt, String msg) throws Exception {
+        Date dt2 = getPublicAccessDate(o);
+        if (dt != null && dt2 != null) {
+            if (!datesClose(dt, dt2)) {
+                throw new Exception(msg + ": " + dt + " != " + dt2);
+            }
+        }
+    }
+
+    /**
+     * Return true if the two dates are within 2 days of each other to deal
+     * with oddities in dates and time zones
+     */
+    public static boolean datesClose(Date d1, Date d2) {
+        // If both are null, we're good
+        if (d1 == null && d2 == null) {
+            return true;
+        }
+
+        // If only one is null, they're off
+        if (d1 == null || d2 == null) {
+            return false;
+        }
+
+        long milliDiff = d1.getTime() - d2.getTime();
+        int days = (int)(milliDiff / (1000 * 60 * 60 * 24));
+        if (days >= -2 && days <= 2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the date the object's public access starts
+     */
+    private Date getPublicAccessDate(DSpaceObject o) throws SQLException {
+        ResourcePolicy rp = getPublicReadPolicy(o);
+        if (rp == null) {
+            return EmbargoManager.FOREVER.toDate();
+        }
+
+        return rp.getStartDate();
+    }
+
+    /**
      * Check a name against bundle names which are meant to be 100% public.
      * Public bundles are those which we expect to be unprotected, and which we
      * expect bitstreams inside to also be unprotected.  For us, this means
