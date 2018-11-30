@@ -1,6 +1,34 @@
 <?xml version="1.0"?>
 <commands>
     <command>
+        <name>audit-embargoes</name>
+        <description>Embargo tool used to check and display potentially invalid embargoes</description>
+        <step>
+            <class>org.dspace.embargo.EmbargoAuditor</class>
+        </step>
+    </command>
+    <command>
+        <name>audit-workflows</name>
+        <description>Check for "orphaned" workflows on collections</description>
+        <step>
+            <class>org.dspace.workflow.OrphanedWorkflowAuditor</class>
+        </step>
+    </command>
+    <command>
+        <name>account-purge</name>
+        <description>EPerson tool for removing inactive accounts</description>
+        <step>
+            <class>org.dspace.eperson.AccountPurge</class>
+        </step>
+    </command>
+    <command>
+        <name>account-create-sync</name>
+        <description>EPerson tool for setting up a TSV file of create dates</description>
+        <step>
+            <class>org.dspace.eperson.AccountCreateSync</class>
+        </step>
+    </command>
+    <command>
         <name>bitstore-migrate</name>
         <description>Assetstore migration tool</description>
         <step>
